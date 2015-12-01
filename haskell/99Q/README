@@ -1,0 +1,29 @@
+source: https://wiki.haskell.org/99_questions/1_to_10
+
+This is part of Ninety-Nine Haskell Problems, based on Ninety-Nine Prolog
+ Problems and Ninety-Nine Lisp Problems.
+
+== Solution ==
+
+All solutions are in QXX/QXX.hs, which XX is the question number.
+
+== How to build and run ==
+
+please install GHC (or haskell-platform) and cabal-install (recommended).
+
+  $ cabal sandbox init   # I don't intend to break your system <3
+  $ cabal install
+
+to run specific solution, try:
+
+  $ .cabal-sandbox/bin/99Q01
+
+or add ``.cabal-sandbox/bin'' to your $PATH and just:
+
+  $ 99Q01
+
+or if you prefer plain ghc command.
+
+  $ cd QXX
+  $ ghc Main.hs
+  $ ./Main
