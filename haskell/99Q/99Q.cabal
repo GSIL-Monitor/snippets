@@ -54,3 +54,13 @@ executable 99Q04
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
+
+executable 99Q05
+  main-is:             Main.hs
+  hs-source-dirs:      Q05
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base >=4.8 && <4.9
+  ghc-options:         -static
+  -- hs-source-dirs:
+  default-language:    Haskell2010
