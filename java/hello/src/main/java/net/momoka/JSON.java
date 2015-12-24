@@ -1,26 +1,42 @@
 package net.momoka;
 
-import java.lang.reflect.Type;
-import java.util.Map;
+import java.util.regex.Pattern;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JSON {
 
-    private static Logger logger = LoggerFactory.getLogger(JSON.class);
+    private static final Logger logger = LoggerFactory.getLogger(JSON.class);
+
+    private static final Pattern SPACE = Pattern.compile(" ");
+
+    private static final String orig =
+        "{\"date\": \"2015-12-24 00:00:00\", \"data\": {\"user_id\": 1234567890}, \"flag\": \"middleware\"}";
 
     public static void main(String[] args) {
-        Gson gson = new Gson();
 
-        Type type = new TypeToken<Map<String, String>>() {
-        }.getType();
+        Object _ = JSONValue.parse(orig);
+        JSONObject obj = (JSONObject) _;
 
-        Map<String, String> in = gson.fromJson("{\"hello\": \"world\"}", type);
+        if (!obj.containsKey("flag")) {
+            logger.warn("no flag from input");
+            return;
+        }
 
-        logger.info(in.toString());
-        logger.info(in.get("hello"));
+        String action = obj.get("flag").toString();
+        String date =
+            SPACE.split(obj.get("date").toString())[0].replace("-", "");
+
+        _ = obj.get("data");
+        JSONObject data = (JSONObject) _;
+        Long userId = Long.parseLong(data.get("user_id").toString());
+
+        logger.info(action);
+        logger.info(date);
+        logger.info(userId.toString());
+
     }
 }
