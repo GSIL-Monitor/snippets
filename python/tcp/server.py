@@ -27,8 +27,14 @@ sock.listen(5)
 while True:
     conn, addr = sock.accept()
     while True:
-        idx = int(random.random() * len(words))
-        rv = words[idx]
+
+        cnt = int(random.random() * 10)
+        w = []
+        for i in range(cnt):
+            idx = int(random.random() * len(words))
+            w.append(words[idx])
+
+        rv = " ".join(w)
         try:
             conn.send((rv + '\n').encode('ascii'))
         except BrokenPipeError:
