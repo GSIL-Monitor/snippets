@@ -1,9 +1,14 @@
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+
+#include "util/util.h"
+
 
 
 void get_current_time(char *format, char* output, int length)
@@ -16,8 +21,18 @@ void get_current_time(char *format, char* output, int length)
 }
 
 
+
 int main(int argc, char** argv)
 {
+
+	char cmd1[] = "while true; do date; sleep 2; done";
+	char cmd2[] = "while true; do date; sleep 3; done";
+
+	char* programs[2];
+
+	programs[0] = cmd1;
+	programs[1] = cmd2;
+
 	int fd[2];
 	if (pipe(fd) == -1) perror("pipe error");
 	pid_t pid = fork();
@@ -27,16 +42,18 @@ int main(int argc, char** argv)
 		/* child */
 
 		dup2(fd[1], 1);
+		dup2(fd[1], 2);
 		close(fd[0]);
 		close(fd[1]);
 
-		while (1) {
-			/* write(2, "child loop\n", 11); */
-			printf("just some random output\n");
-			fflush(stdout);
-			sleep(1);
-		}
-		break;
+		execl("/bin/bash",
+					"bash",
+					"-c",
+					"while true; do date; sleep 1; done",
+					(char *) 0);
+		perror("exec error");
+		exit(-1);
+
 	case -1:
 		perror("fork error");
 		break;
@@ -45,41 +62,71 @@ int main(int argc, char** argv)
 		/* parent */
 		close(fd[1]);
 
-		printf("[parent] child input fd: %d\n", fd[1]);
+		/* printf("[parent] child input fd: %d\n", fd[1]); */
 
-		int flags = fcntl(fd[0], F_GETFL, 0);
+ 		int flags = fcntl(fd[0], F_GETFL, 0);
 		fcntl(fd[0], F_SETFL, flags | O_NONBLOCK);
 
-		size_t nbytes = 0;
-		char buf[4096] = {0};
-		char _out[4096] = {0};
 		char now[9] = {0};
+		char buf[4096] = {0};
+		int f = 0;
 
-		while (1) {
-			while ((nbytes = read(fd[0], buf, sizeof(buf))) > 0) {
-				if (strlen(buf) > 0) {
-					printf("[parent] buf strlen: %lu\n",
-								 strlen(buf));
+		for (;;) {
+			fd_set readfds;
+			FD_ZERO(&readfds);
+			FD_SET(fd[0], &readfds);
 
-					get_current_time(
-						"%H:%M:%S",
-						now,
-						sizeof(now));
+			/* printf("[parent] about to select\n"); */
+			int rc = select(fd[0] + 1, &readfds, NULL, NULL, NULL);
+			if (rc == -1) continue;
+			if (FD_ISSET(fd[0], &readfds)) {
 
-					strcat(_out, now);
-					strcat(_out, " worker1 |");
-					strcat(_out, buf);
+				for (;;) {
+					f = readline(fd[0], buf, sizeof(buf));
+					/* printf("[parent] %d\n", f); */
+					switch(f) {
+					case 0:
+						/* end */
+						break;
+					case -1:
+						usleep(100000);
+						goto out;
+						break;
+					default:
+						;
 
-					printf(_out);
+						if (strlen(buf) <= 0) goto out;
 
-					memset(buf, 0, sizeof(buf));
-					memset(_out, 0, sizeof(_out));
+						get_current_time("%H:%M:%S", now, sizeof(now));
+
+						char prefix[] = " worker1 | ";
+
+						size_t s = strlen(now)
+							+ strlen(prefix) + strlen(buf);
+
+						char out[s];
+						memset(out, 0, s);
+
+						strcat(out, now);
+						strcat(out, prefix);
+						strcat(out, buf);
+						printf("%s", out);
+
+						break;
+					}
+					memset(now, 0, sizeof(now));
 				}
-				else {
-					usleep(1000);
-				}
+
+out:
+				continue;
+
 			}
 		}
+
+		break;
+
+
+
 
 		break;
 	}
