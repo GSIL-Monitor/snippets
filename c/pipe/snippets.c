@@ -4,11 +4,14 @@
 #include <string.h>
 #include <sys/select.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 
 #include "util/util.h"
 
+
+#define PROG_LENGTH 2
 
 
 void get_current_time(char *format, char* output, int length)
@@ -20,19 +23,48 @@ void get_current_time(char *format, char* output, int length)
 	strncat(output, buf, length);
 }
 
+void read_output(int fd, const char* prefix) {
+	char now[9] = {0};
+	char buf[4096] = {0};
+	int f = 0;
+
+	for (;;) {
+		f = readline(fd, buf, sizeof(buf));
+		/* printf("[parent] %d\n", f); */
+		switch(f) {
+		case 0:
+			/* end */
+			return;
+			break;
+		case -1:
+			usleep(100000);
+			return;
+		default:
+			;
+
+			if (strlen(buf) <= 0) return;
+
+			get_current_time("%H:%M:%S", now, sizeof(now));
+
+			size_t s = strlen(now)
+				+ strlen(prefix) + strlen(buf);
+
+			char out[s];
+			memset(out, 0, s);
+
+			strcat(out, now);
+			strcat(out, prefix);
+			strcat(out, buf);
+			printf("%s", out);
+			break;
+		}
+		memset(now, 0, sizeof(now));
+	}
+}
 
 
-int main(int argc, char** argv)
+void run_child(const char* command, int* rv_pid, int* rv_fd)
 {
-
-	char cmd1[] = "while true; do date; sleep 2; done";
-	char cmd2[] = "while true; do date; sleep 3; done";
-
-	char* programs[2];
-
-	programs[0] = cmd1;
-	programs[1] = cmd2;
-
 	int fd[2];
 	if (pipe(fd) == -1) perror("pipe error");
 	pid_t pid = fork();
@@ -47,88 +79,115 @@ int main(int argc, char** argv)
 		close(fd[1]);
 
 		execl("/bin/bash",
-					"bash",
-					"-c",
-					"while true; do date; sleep 1; done",
-					(char *) 0);
+			  "bash",
+			  "-c",
+			  command,
+			  (char *) 0);
 		perror("exec error");
 		exit(-1);
 
 	case -1:
 		perror("fork error");
-		break;
 
 	default:
 		/* parent */
 		close(fd[1]);
-
-		/* printf("[parent] child input fd: %d\n", fd[1]); */
-
  		int flags = fcntl(fd[0], F_GETFL, 0);
 		fcntl(fd[0], F_SETFL, flags | O_NONBLOCK);
+		break;
+	}
 
-		char now[9] = {0};
-		char buf[4096] = {0};
-		int f = 0;
+	*rv_pid = pid;
+	*rv_fd = fd[0];
+}
 
-		for (;;) {
-			fd_set readfds;
-			FD_ZERO(&readfds);
-			FD_SET(fd[0], &readfds);
 
-			/* printf("[parent] about to select\n"); */
-			int rc = select(fd[0] + 1, &readfds, NULL, NULL, NULL);
-			if (rc == -1) continue;
-			if (FD_ISSET(fd[0], &readfds)) {
 
-				for (;;) {
-					f = readline(fd[0], buf, sizeof(buf));
-					/* printf("[parent] %d\n", f); */
-					switch(f) {
-					case 0:
-						/* end */
-						break;
-					case -1:
-						usleep(100000);
-						goto out;
-						break;
-					default:
-						;
+int main(int argc, char** argv)
+{
 
-						if (strlen(buf) <= 0) goto out;
+	char cmd1[] = "while true; do date; sleep 2; done";
+	/* char cmd2[] = "while true; do date +%s; sleep 3; done"; */
+	char cmd2[] = "echo 1";
 
-						get_current_time("%H:%M:%S", now, sizeof(now));
+	char* programs[2];
 
-						char prefix[] = " worker1 | ";
+	programs[0] = cmd1;
+	programs[1] = cmd2;
 
-						size_t s = strlen(now)
-							+ strlen(prefix) + strlen(buf);
+	char* prefix[PROG_LENGTH];
+	prefix[0] = " worker1 | ";
+	prefix[1] = " worker2 | ";
 
-						char out[s];
-						memset(out, 0, s);
+	int fds[PROG_LENGTH];
+	int pids[PROG_LENGTH];
 
-						strcat(out, now);
-						strcat(out, prefix);
-						strcat(out, buf);
-						printf("%s", out);
+	int alive_progs = PROG_LENGTH;
 
+	for(int _ = 0; _ < PROG_LENGTH; _++){
+		int fd = 0;
+		int pid = 0;
+		run_child(programs[_], &pid, &fd);
+		fds[_] = fd;
+		pids[_] = pid;
+	}
+
+	for(int _ = 0; _ < PROG_LENGTH; _++) {
+		printf("fd: %d\n", fds[_]);
+		printf("pid: %d\n", pids[_]);
+	}
+
+
+	for (;;) {
+
+		int curr_alive_progs = alive_progs;
+		for(int _ = 0; _ < curr_alive_progs; _++) {
+			int p_status = 0;
+			pid_t dead_pid = waitpid(0, &p_status, WNOHANG);
+			if (dead_pid > 0) {
+				printf("[parent] dead child: %u\n", dead_pid);
+				int idx = -1;
+				for (int _ = 0; _ < curr_alive_progs; _++) {
+					if (pids[_] == dead_pid) {
+						idx = _;
 						break;
 					}
-					memset(now, 0, sizeof(now));
 				}
-
-out:
-				continue;
-
+				fds[idx] = 0;
 			}
 		}
 
-		break;
+		fd_set readfds;
+		FD_ZERO(&readfds);
+
+		for(int _ = 0; _ < PROG_LENGTH; _++) {
+
+			printf("[parent] ");
+
+			if (fds[_] > 0) {
+				FD_SET(fds[_], &readfds);
+			}
+		}
+
+		/* printf("[parent] about to select\n"); */
+		int rc = select(
+			fds[PROG_LENGTH-1] + 1,
+			&readfds,
+			NULL,
+			NULL,
+			NULL);
+		if (rc == -1) continue;
+
+		for(int _ = 0; _ < PROG_LENGTH; _++) {
+			if (FD_ISSET(fds[_], &readfds)) {
+				printf("[parent] ready index: %d, fd: %d\n",
+					   _,
+					   fds[_]);
+				read_output(fds[_], prefix[_]);
+				printf("[parent] read complete\n");
+			}
+		}
 
 
-
-
-		break;
 	}
-	return 0;
 }

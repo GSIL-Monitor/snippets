@@ -61,6 +61,7 @@ int main(int argc, char** argv)
 	while (1) {
 		f = readline(0, buf, sizeof(buf));
 		if (f > 0) {
+			printf("%lu\n", strlen(buf));
 			printf(buf);
 		}
 		if (f == 0) break;
