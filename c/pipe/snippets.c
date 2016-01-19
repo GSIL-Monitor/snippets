@@ -1,4 +1,6 @@
+#include "errno.h"
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +32,7 @@ static char* colors[] = {
 };
 
 static int breaking = 1;
+static int progs = PROG_LENGTH;
 
 void get_current_time(char *format, char* output, int length)
 {
@@ -119,18 +122,38 @@ void run_child(const char* command, int* rv_pid, int* rv_fd)
 	*rv_fd = fd[0];
 }
 
-
-void reap_children(int alive_progs, int pids[], int fds[])
+void kill_children(size_t size, int pids[])
 {
-	int curr_alive_progs = alive_progs;
-	for(int _ = 0; _ < curr_alive_progs; _++) {
+	for (unsigned int _ = 0; _ < size; _++) {
+		if (pids[_] == 0) continue;
+		kill(pids[_], SIGTERM);
+		printf("[parent] killed: %d\n", pids[_]);
+	}
+
+	int p_status;
+	for (;;) {
+		pid_t dead_pid = waitpid(0, &p_status, WNOHANG);
+		if (dead_pid == -1) {
+			if (errno == ECHILD) {
+				exit(-1);
+			}
+		}
+	}
+}
+
+int reap_children(size_t size, int pids[], int fds[])
+{
+	for(unsigned int _ = 0; _ < size; _++) {
 		int p_status = 0;
 		pid_t dead_pid = waitpid(0, &p_status, WNOHANG);
 		printf("[parent] dead_pid: %d\n", dead_pid);
 		if (dead_pid == 0) continue;
+
+		if (breaking == true) kill_children(size, pids);
+
 		printf("[parent] dead child: %u\n", dead_pid);
 		int idx = -1;
-		for (int _ = 0; _ < curr_alive_progs; _++) {
+		for (unsigned int _ = 0; _ < size; _++) {
 			if (pids[_] != dead_pid) continue;
 			idx = _;
 			break;
@@ -138,14 +161,8 @@ void reap_children(int alive_progs, int pids[], int fds[])
 		printf("[parent] mark fd %d to zero.\n", fds[idx]);
 		fds[idx] = 0;
 	}
+	return 1;
 }
-
-void kill_children()
-{
-
-}
-
-
 
 int main(int argc, char** argv)
 {
@@ -199,7 +216,7 @@ int main(int argc, char** argv)
 
 	for (;;) {
 
-		reap_children(PROG_LENGTH, pids, fds);
+		reap_children(progs, pids, fds);
 
 		fd_set readfds;
 		FD_ZERO(&readfds);
