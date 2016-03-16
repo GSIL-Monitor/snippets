@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
 import logging.config
+import random
 import time
 
-logging.config.fileConfig('logging.ini')
+import logging_config
 
-logger = logging.getLogger().getChild('test.app')
+logging.config.dictConfig(logging_config.logging_config)
 
-
+logger = logging.getLogger()
 
 while True:
-    logger.info('an info')
-    logger.debug('a debug')
-    time.sleep(1)
+    s = random.random()
+    time.sleep(s)
+
+    logger.debug('debug')
+    logger.warning('warning')
