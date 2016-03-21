@@ -1,0 +1,102 @@
+# -*- coding: utf-8; mode: python -*-
+import math
+from decimal import Decimal
+import re
+
+from ploceus.api import task
+from ploceus.api import run, sudo
+from ploceus.runtime import context_manager, env
+
+from ploceus.tools import files
+from ploceus.tools import system
+
+
+def in_percentage(value):
+    return ('%.02f' % (value * 100)) + '%'
+
+
+def get_mem_info():
+    _ = run('cat /proc/meminfo', quiet=True)
+
+    total = 0
+    free = 0
+    buffered = 0
+    cached = 0
+    used = 0
+
+    for line in _.stdout.split('\n'):
+        frags = re.split(r'\ +', line.strip(), maxsplit=3)
+
+
+        if frags[0] == 'MemTotal:':
+            total = int(frags[1])
+        if frags[0] == 'MemFree:':
+            free = int(frags[1])
+        if frags[0] == 'Buffers:':
+            buffered = int(frags[1])
+        if frags[0] == 'Cached:':
+            cached = int(frags[1])
+
+    if total > 0:
+        used = total - (free + buffered + cached)
+
+        usage = (used / total)
+        print('memory: %sG' % (math.ceil(total / 1024 / 1024)))
+        print('mem usage: %s' % in_percentage(usage))
+
+
+def get_cpu_info():
+
+    print('cpu: %s' % system.cpus())
+
+    _ = run('mpstat -P ALL | grep all', quiet=True)
+    _ = _.stdout.strip()
+    frags = re.split(r'\ +', _)
+
+    frags.pop(0)
+    frags.pop(0)
+    frags.pop(0)
+    cpu_us = frags[0]
+    cpu_ni = frags[1]
+    cpu_sy = frags[2]
+    cpu_wa = frags[3]
+    cpu_hi = frags[4]
+    cpu_si = frags[5]
+    cpu_st = frags[7]
+    cpu_id = frags[9]
+
+    print('cpu usage: %.2f%%' % (100 - Decimal(cpu_id)))
+
+
+def get_load_info():
+    _ = run('w | head -n 1', quiet=True)
+    _ = _.stdout.strip()
+    frags = re.split(r'\ +', _)
+    load_shortterm, load_midterm, load_longterm = frags[-3:]
+    load_shortterm = load_shortterm.strip(',')
+    load_midterm = load_midterm.strip(',')
+
+    print('load: %s %s %s' % \
+          (Decimal(load_shortterm),
+           Decimal(load_midterm),
+           Decimal(load_longterm)))
+
+
+def get_disk_root_info():
+    _ = run("df -B4096 / | tail -n 1", quiet=True)
+    frags = re.split(r'\ +', _.stdout.strip(), maxsplit=6)
+
+    total = int(frags[1]) * 4096
+    used = int(frags[2]) * 4096
+    free = int(frags[3]) * 4096
+
+    print('root disk: %sG' % (math.ceil(total / 1024 / 1024 / 1024)))
+    print('root disk usage: %.2f%%' % (((total - free) / total) * 100))
+
+
+@task
+def test():
+    get_mem_info()
+    get_cpu_info()
+    get_load_info()
+    get_disk_root_info()
