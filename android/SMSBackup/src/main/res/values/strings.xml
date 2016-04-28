@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SMSBackup</string>
+    <string name="title_activity_main">SMSBackup</string>
+
+    <string name="action_settings">settings</string>
+</resources>
