@@ -1,3 +1,7 @@
+repositories {
+  mavenCentral()
+}
+
 buildscript {
   repositories {
     mavenCentral()
@@ -23,9 +27,18 @@ android {
       'proguard-rules.pro'
     }
   }
+
+  packagingOptions {
+    exclude 'META-INF/DEPENDENCIES'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'META-INF/NOTICE.txt'
+  }
 }
 
 dependencies {
   compile 'com.android.support:support-v4:23.2.+'
   compile 'com.android.support:support-annotations:23.2.+'
+  compile 'com.mashape.unirest:unirest-java:1.3.1'
 }

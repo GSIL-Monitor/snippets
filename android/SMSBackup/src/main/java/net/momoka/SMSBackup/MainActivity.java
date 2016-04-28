@@ -4,15 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.app.ActivityCompat;
 
 public class MainActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -20,12 +19,16 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private static final int REQUEST_SMS_PERMISSIONS = 1;
     private static final String[] PERMISSIONS_SMS = {Manifest.permission.READ_SMS, Manifest.permission.WRITE_SMS};
 
+    private static SMSManager sSMSManager;
+
     /**
      * Called when the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sSMSManager = SMSManager.getIntance();
+        sSMSManager.setContext(this);
         setContentView(R.layout.main);
 
         Button backupBtn = (Button) findViewById(R.id.btnBackup);
@@ -78,37 +81,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     }
 
     public void doReadSMS() {
-
-        StringBuilder sb;
-        String sortOrder;
-        int limit = 10;
-        int offset = 0;
-        int cnt = 0;
-
-        for (; ; ) {
-
-            sb = new StringBuilder();
-            sb.append("date DESC ");
-            sb.append("LIMIT " + Integer.toString(limit));
-            sb.append(" OFFSET " + Integer.toString(offset));
-
-            sortOrder = sb.toString();
-
-            Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, sortOrder);
-            if (cursor.moveToFirst()) {
-                do {
-                    cnt++;
-                    Log.i(TAG, "== begin " + Integer.toString(cnt) + "th message ==");
-                    Log.i(TAG, cursor.getString(cursor.getColumnIndex("_id")));
-                } while (cursor.moveToNext());
-                offset += limit;
-                Log.i(TAG, "all sms read!");
-            } else {
-                Log.w(TAG, "no sms in inbox!");
-                break;
-            }
-        }
-
+        sSMSManager.startLoad();
+        // doWriteSMS();
     }
 
     public void doWriteSMS() {
