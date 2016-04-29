@@ -14,9 +14,9 @@ public class SMSLoaderRunnable implements Runnable {
     private static final String TAG = SMSLoaderRunnable.class.toString();
 
     static Context mContext = null;
-    static final int LOAD_FAILED = -1;
-    static final int LOAD_STARTED = 0;
-    static final int LOAD_COMPLETED = 1;
+    static final int LOAD_STATE_FAILED = -1;
+    static final int LOAD_STATE_STARTED = 0;
+    static final int LOAD_STATE_COMPLETED = 1;
 
     final SMSTask mTask;
 
@@ -25,17 +25,22 @@ public class SMSLoaderRunnable implements Runnable {
 
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
+        mTask.handleLoadState(LOAD_STATE_STARTED);
+
         StringBuilder sb;
         String sortOrder;
-        int limit = 1;
+        int limit = 10;
         int offset = 0;
         int cnt = 0;
         int i = 0;
-        int m = 0;
 
-        Map<String, String> message = null;
+        // TODO: error handling: LOAD_STATE_FAILED
 
-        for (m = 0 ; m < 1 ; m++) {
+        SMSMessage message = null;
+
+        for ( ;; ) {
+
+            Thread.interrupted();
 
             sb = new StringBuilder();
 
@@ -51,28 +56,30 @@ public class SMSLoaderRunnable implements Runnable {
             if (cursor.moveToFirst()) {
                 do {
                     cnt++;
-                    Log.i(TAG, "== begin " + Integer.toString(cnt) + "th message ==");
+                    // Log.d(TAG, "== begin " + Integer.toString(cnt) + "th message ==");
 
-                    message = new HashMap<String, String>();
+                    message = new SMSMessage();
                     for(i = 0; i < cursor.getColumnCount(); i++) {
-                        message.put(cursor.getColumnName(i), cursor.getString(i));
+                        message.value.put(cursor.getColumnName(i), cursor.getString(i));
                     }
 
-                    Log.d(TAG, message.toString());
+                    // Log.d(TAG, message.toString());
                     mTask.messages.add(message);
 
                 } while (cursor.moveToNext());
                 offset += limit;
             } else {
                 Log.w(TAG, "no sms in inbox!");
+                cursor.close();
                 break;
             }
             cursor.close();
         }
 
+        Log.d(TAG, String.format("loaded %d messages", cnt));
         Log.d(TAG, "sms all read!");
 
-        mTask.handleLoadState(LOAD_COMPLETED);
+        mTask.handleLoadState(LOAD_STATE_COMPLETED);
         Thread.interrupted();
     }
 

@@ -6,12 +6,16 @@ import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.os.Handler;
 
 public class MainActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -19,7 +23,22 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private static final int REQUEST_SMS_PERMISSIONS = 1;
     private static final String[] PERMISSIONS_SMS = {Manifest.permission.READ_SMS, Manifest.permission.WRITE_SMS};
 
+    private Handler mHandler;
+
     private static SMSManager sSMSManager;
+
+    private void handleHandler() {
+        mHandler = new Handler(Looper.getMainLooper()) {
+          @Override
+          public void handleMessage(Message inputMessage) {
+              int state = inputMessage.what;
+              switch (state) {
+                  default:
+                      Log.d(TAG, Integer.toString(state));
+              }
+          }
+        };
+    }
 
     /**
      * Called when the activity is first created.
@@ -81,7 +100,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     }
 
     public void doReadSMS() {
-        sSMSManager.startLoad();
+        sSMSManager.startLoad((TextView)findViewById(R.id.txtStatus));
         // doWriteSMS();
     }
 
