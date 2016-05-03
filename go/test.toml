@@ -1,0 +1,11 @@
+debug = false
+
+[databases]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [databases.alpha]
+  host = "127.0.0.1"
+  port = 3306
+  user = "root"
+  pass = ""
+  dbname = "test"

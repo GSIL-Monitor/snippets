@@ -1,7 +1,7 @@
 package main
 
-import "fmt";
-import "gopkg.in/redis.v3";
+import "fmt"
+import "gopkg.in/redis.v3"
 
 func main() {
 	client := redis.NewClient(&redis.Options{
@@ -10,7 +10,12 @@ func main() {
 		DB: 0,
 	});
 
-	pong, err := client.Info().Result();
+	pong, err := client.Info().Result()
 
-	fmt.Println(pong, err);
+	if err != nil {
+		fmt.Println("[err]:", err)
+	} else {
+		fmt.Println(pong)
+	}
+
 }
