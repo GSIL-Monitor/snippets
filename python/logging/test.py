@@ -6,9 +6,8 @@ import time
 
 import logging_config
 
-logging.config.dictConfig(logging_config.logging_config)
-
 logger = logging.getLogger()
+status = logging.getLogger('status')
 
 while True:
     s = random.random()
@@ -16,3 +15,4 @@ while True:
 
     logger.debug('debug')
     logger.warning('warning')
+    status.warning('warning')

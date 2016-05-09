@@ -1,7 +1,9 @@
 package main
 
 import "fmt"
+import "time"
 import "gopkg.in/redis.v3"
+
 
 func main() {
 	client := redis.NewClient(&redis.Options{
@@ -10,12 +12,15 @@ func main() {
 		DB: 0,
 	});
 
-	pong, err := client.Info().Result()
+  d := time.Second * 1
 
-	if err != nil {
-		fmt.Println("[err]:", err)
+	pong, err := client.BLPop(d, "test").Result()
+
+	if err != redis.Nil && err != nil {
+    fmt.Printf("err: %v\n", err)
+    fmt.Printf("err: %T\n", err)
 	} else {
-		fmt.Println(pong)
+		fmt.Printf("result: %v\n", pong)
 	}
 
 }
