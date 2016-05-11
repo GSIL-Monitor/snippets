@@ -20,6 +20,8 @@ func main() {
 	con, err := sql.Open(
 		"mysql", store.User+":"+store.Pass+"@/"+store.DB)
 
+	log.Printf("%T, %+v", con, con)
+
 	defer con.Close()
 
 	con.SetMaxIdleConns(100)
