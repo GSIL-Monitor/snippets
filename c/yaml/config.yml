@@ -1,0 +1,13 @@
+# config.yml
+monitor:
+  - name: biz.test
+    interval: 15
+    command: date
+  - name: biz.test2
+    interval: 15
+    command: echo 1
+
+
+statd:
+  host: 127.0.0.1
+  port: 1234

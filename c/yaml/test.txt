@@ -1,0 +1,48 @@
+
+
+
+
+
+struct timer_data_t {
+  int interval;
+  char *name;
+  char *command;
+}
+
+void timer_callback(uv_timer_t* handle)
+{
+    // ...
+}
+
+
+int main()
+{
+
+    uv_loop_t loop = uv_default_loop();
+
+    config_t *config = read_config();
+
+    config->statd_config;
+
+    monitor_items = config->monitor_config;
+
+    do {
+
+       struct timer_data_t *timer_data =
+       	      malloc(sizeof(struct timer_data_t))
+
+       int interval = monitor_items->config.interval;
+       time_data->name = monitor_items->config.name;
+       time_data->command = monitor_items->config.command;
+
+       uv_timer_t timer;
+       timer.data = timer_data;
+
+       uv_timer_init(loop, timer);
+       uv_timer_start(&timer, (uv_timer_cb) &timer_callback, 0, interval);
+
+    } while(monitor_items->next);
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+
+}
