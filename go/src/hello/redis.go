@@ -1,26 +1,75 @@
 package main
 
-import "fmt"
+import "log"
+import "flag"
+import "github.com/garyburd/redigo/redis"
 import "time"
-import "gopkg.in/redis.v3"
 
+var (
+	pool        *redis.Pool
+	redisServer = flag.String("redisServer", ":6379", "")
+)
+
+func newPool(server string) *redis.Pool {
+	return &redis.Pool{
+		MaxActive:   100,
+		MaxIdle:     3,
+		IdleTimeout: 10 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", server)
+			if err != nil {
+				return nil, err
+			}
+			/*
+				if _, err := c.Do("AUTH", ""); err != nil {
+					c.Close()
+					return nil, err
+				}
+			*/
+			return c, err
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+	}
+}
+
+func get(id int, q chan bool) {
+	conn := pool.Get()
+	defer conn.Close()
+	for {
+		v := <-q
+		if v {
+
+			_, err := conn.Do("SET", "hello", 10)
+
+			res, err := conn.Do(
+				"GET", "hello")
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			if res != nil {
+				log.Printf("%T", res)
+				log.Printf("%+v", res)
+				log.Printf("%+v", string(res.([]byte)))
+			}
+		}
+	}
+}
 
 func main() {
-	client := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
-		Password: "",
-		DB: 0,
-	});
+	flag.Parse()
+	pool = newPool(*redisServer)
 
-  d := time.Second * 1
+	q := make(chan bool)
 
-	pong, err := client.BLPop(d, "test").Result()
-
-	if err != redis.Nil && err != nil {
-    fmt.Printf("err: %v\n", err)
-    fmt.Printf("err: %T\n", err)
-	} else {
-		fmt.Printf("result: %v\n", pong)
+	for i := 0; i < 10; i++ {
+		go get(i, q)
 	}
 
+	for {
+		q <- true
+	}
 }

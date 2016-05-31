@@ -44,10 +44,13 @@ func main() {
 	)
 	handleError(err)
 
+	err = ch.Qos(3, 0, false)
+	handleError(err)
+
 	msgs, err := ch.Consume(
 		q.Name,
 		"",    // consumer
-		true,  // auto-ack
+		false, // auto-ack
 		false, // exclusive
 		false, // no-local
 		false, // no-wait
@@ -55,13 +58,21 @@ func main() {
 	)
 	handleError(err)
 
+	log.Printf("%T", msgs)
+	log.Printf("%+v", msgs)
+
 	forever := make(chan bool)
 
-	go func() {
+	worker := func() {
 		for d := range msgs {
-			log.Printf("received: %s", d.Body)
+			d.Ack(true)
+			// log.Printf("%+v", d)
+			// log.Printf("%T", d)
+			// log.Printf("received: %s", d.Body)
 		}
-	}()
+	}
+
+	go worker()
 
 	log.Printf(" [*] waiting for messages incoming")
 
