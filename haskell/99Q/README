@@ -9,18 +9,15 @@ All solutions are in QXX/QXX.hs, which XX is the question number.
 
 == How to build and run ==
 
-please install GHC (or haskell-platform) and cabal-install (recommended).
+please install GHC (or haskell-platform) and stack (recommended).
 
-  $ cabal sandbox init   # I don't intend to break your system <3
-  $ cabal install
+  $ stack setup
+  $ stack build
+  $ stack install
 
 to run specific solution, try:
 
-  $ .cabal-sandbox/bin/99Q01
-
-or add ``.cabal-sandbox/bin'' to your $PATH and just:
-
-  $ 99Q01
+  $ stack exec 99Qxx
 
 or if you prefer plain ghc command.
 
