@@ -79,7 +79,6 @@ class WorkerThread implements Runnable {
       }
 
       if (payload == null) continue;
-
       LOGGER.debug("got payload: {}", payload);
     }
 
