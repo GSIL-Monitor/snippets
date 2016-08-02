@@ -1,6 +1,7 @@
 package net.momoka.urlconnection;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -162,14 +163,60 @@ class Request {
     return databuffer;
   }
 
-  protected void checkContentLength() throws SocketException {
+  protected byte[] readResponse ()
+    throws SocketException {
+    ByteArrayOutputStream databuffer = null;
+    InputStream is = null;
+    BufferedInputStream bis = null;
+
+
+    try {
+      databuffer = new ByteArrayOutputStream();
+      is = conn.getInputStream();
+      bis = new BufferedInputStream(is);
+
+      do {
+        if (bis.available() > 0) {
+          int b = bis.read();
+
+          if (b > 0) {
+            databuffer.write(b);
+          }
+          else {
+            // b == -1 => EOF
+            LOGGER.warn("Server sent premature EOF, aborting...");
+            throw new SocketException("Unexpected EOF from server");
+          }
+        }
+        else {
+
+        }
+      } while (bis.available() > 0);
+    }
+    catch (Exception e) {
+
+    }
+    finally {
+      try { bis.close(); } catch (Exception e2) {}
+      try { is.close(); } catch (Exception e2) {}
+    }
+
+    return databuffer.toByteArray();
+  }
+
+  protected void checkContentLength() {
+    String contentEncoding = conn.getHeaderField("Transfer-Encoding");
     int tempLength = conn.getContentLength();
+
+    if ("chunked".equals(contentEncoding)) {
+      return;
+    }
 
     if (tempLength < 0) {
       LOGGER.warn(
         "Request host did not send Content-Length, abort transfer ({})",
         conn);
-      throw new SocketException("missing content-length header");
+      // throw new SocketException("missing content-length header");
     }
   }
 
@@ -192,7 +239,13 @@ class Request {
       checkContentLength();
       tempLength = conn.getContentLength();
 
-      byte[] body = readResponse(tempLength);
+      byte[] body;
+      if (tempLength > 0) {
+        body = readResponse(tempLength);
+      }
+      else {
+        body = readResponse();
+      }
 
       rv.responseCode = ((HttpURLConnection) conn).getResponseCode();
       rv.body = body;
@@ -339,7 +392,9 @@ public class Main {
     LOGGER.debug(uri.toString());
     LOGGER.debug(uri.toURL().toString());
 
-    Response resp = HTTPService.get("http://127.0.0.1/proxy.pac");
+    // Response resp = HTTPService.get("http://127.0.0.1/proxy.pac");
+    Response resp = HTTPService.get(
+      "http://knowing.corp.qianka.com/ops_api/idfa/verify?app_id=414245413");
 
     if (resp.responseCode == HttpURLConnection.HTTP_OK) {
       LOGGER.debug("{}", new String(resp.body, "UTF-8"));
