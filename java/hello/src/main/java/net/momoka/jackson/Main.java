@@ -1,5 +1,6 @@
 package net.momoka.jackson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,5 +33,12 @@ public class Main {
 
     LOGGER.debug("name: {}", person.nameValue);
     LOGGER.debug("age: {}", Integer.toString(person.ageValue));
+
+    List<Integer> numbers = new ArrayList<Integer>();
+    numbers.add(10);
+    numbers.add(3);
+
+    String _ = objectMapper.writeValueAsString(numbers);
+    LOGGER.debug(_);
   }
 }
