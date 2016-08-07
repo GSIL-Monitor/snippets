@@ -68,8 +68,7 @@ public class JingdongImpl implements BaseImpl {
   }
 
   public byte[] sendRequest(
-    MobileApp app, RequestSpec spec, List<String> idfas)
-    throws RequestException {
+    MobileApp app, RequestSpec spec, List<String> idfas) {
 
     Response resp;
     byte[] rv = null;
@@ -131,7 +130,13 @@ public class JingdongImpl implements BaseImpl {
 
     LOGGER.debug("{}", parameters);
 
-    resp = HttpService.post(IDFA_URL, parameters);
+    try {
+      resp = HttpService.post(IDFA_URL, parameters);
+    }
+    catch (RequestException e) {
+      e.printStackTrace();
+      return null;
+    }
 
     LOGGER.debug("status: {}", resp.responseCode);
 
@@ -164,7 +169,7 @@ public class JingdongImpl implements BaseImpl {
     }
     catch (IOException e) {
       e.printStackTrace();
-      throw new RequestException(e.getMessage());
+      return null;
     }
 
     return resp.body;
