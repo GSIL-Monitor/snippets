@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +37,20 @@ public class BaiduImeImpl implements BaseImpl {
   private static final String TOKEN =
     "FpOd3tLRjVaa1FBpZURPcklBQXZFNnpwM9ZrYXBoWk21";
 
+  protected ObjectMapper objectMapper;
+
+  public BaiduImeImpl () {
+    objectMapper = new ObjectMapper();
+    objectMapper.configure(
+      DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    objectMapper.setSerializationInclusion(Include.NON_NULL);
+  }
+
   public byte[] sendRequest(
     MobileApp app, RequestSpec spec, List<String> idfas) {
 
     Response resp;
-    Map<String, String> parameters = new TreeMap<String, String>();
+    Map<String, String> parameters = new TreeMap<String, String>() {};
 
     Long ts = System.currentTimeMillis();
     ts /= 1000;
@@ -96,7 +111,22 @@ public class BaiduImeImpl implements BaseImpl {
   public Map<String, Integer> handleResponse(
     MobileApp app, ResponseSpec spec, byte[] body) {
 
-    return null;
+    Map<String, Integer> rv = new TreeMap<String, Integer>();
+
+    TypeReference ref =
+      new TypeReference<Map<String, Integer>>() {};
+
+    try {
+      rv = objectMapper.readValue(body, ref);
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+      LOGGER.error(
+        "BaiduIme: handle error: appleId: {}, message: {}",
+        app.appleId,
+        e.getMessage());
+    }
+    return rv;
   }
 
   protected String getSecret(String timestamp, String idfas) {

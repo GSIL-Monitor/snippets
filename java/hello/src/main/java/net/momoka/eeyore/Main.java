@@ -22,9 +22,9 @@ public class Main {
   public static void main (String[] args)
     throws RequestException, UnsupportedEncodingException {
 
-    BaseImpl impl = new BaiduImeImpl();
+    // BaseImpl impl = new BaiduImeImpl();
     // BaseImpl impl = new JingdongImpl();
-    // BaseImpl impl = new MobileBaiduImpl();
+    BaseImpl impl = new MobileBaiduImpl();
     // BaseImpl impl = new ZhangyueImpl();
     MobileApp app = new MobileApp();
     // app.appleId = 414245413;
