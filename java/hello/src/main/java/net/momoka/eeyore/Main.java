@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import net.momoka.eeyore.impl.JingdongImpl;
 import net.momoka.eeyore.impl.MobileBaiduImpl;
+import net.momoka.eeyore.impl.ZhangyueImpl;
 import net.momoka.eeyore.http.RequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,8 @@ public class Main {
     throws RequestException, UnsupportedEncodingException {
 
     // BaseImpl impl = new JingdongImpl();
-    BaseImpl impl = new MobileBaiduImpl();
+    // BaseImpl impl = new MobileBaiduImpl();
+    BaseImpl impl = new ZhangyueImpl();
     MobileApp app = new MobileApp();
     app.appleId = 414245413;
 
@@ -29,7 +31,7 @@ public class Main {
 
     List<String> idfas = new ArrayList<String>();
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 10; i++) {
       idfas.add(UUID.randomUUID().toString().toUpperCase());
     }
 
