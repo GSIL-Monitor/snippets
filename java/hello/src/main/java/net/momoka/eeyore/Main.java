@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.momoka.eeyore.impl.BaiduImeImpl;
 import net.momoka.eeyore.impl.JingdongImpl;
 import net.momoka.eeyore.impl.MobileBaiduImpl;
 import net.momoka.eeyore.impl.ZhangyueImpl;
@@ -21,11 +22,12 @@ public class Main {
   public static void main (String[] args)
     throws RequestException, UnsupportedEncodingException {
 
+    BaseImpl impl = new BaiduImeImpl();
     // BaseImpl impl = new JingdongImpl();
     // BaseImpl impl = new MobileBaiduImpl();
-    BaseImpl impl = new ZhangyueImpl();
+    // BaseImpl impl = new ZhangyueImpl();
     MobileApp app = new MobileApp();
-    app.appleId = 414245413;
+    // app.appleId = 414245413;
 
     RequestSpec reqSpec = new RequestSpec();
 

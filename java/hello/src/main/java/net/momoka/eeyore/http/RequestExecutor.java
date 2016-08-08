@@ -73,18 +73,26 @@ public class RequestExecutor {
     return rv;
   }
 
+
   public Response post (
     String url, Map<String, String> parameters,
-    String contentType, Map<String, String> headers)
+    String contentType, Map<String, String> headers,
+    byte[] body)
     throws RequestException {
 
     Response rv = new Response();
+
+    LOGGER.debug("{}", url);
 
     HttpRequestWithBody req = Unirest.post(url);
 
     if (parameters != null) {
       Map<String, Object> t = new HashMap<String, Object>(parameters);
       req.fields(t);
+    }
+
+    if (body != null) {
+      req.body(body);
     }
 
     if (headers != null) {
