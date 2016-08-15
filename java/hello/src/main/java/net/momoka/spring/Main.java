@@ -32,8 +32,8 @@ public class Main {
     ctx.register(Config.class);
     ctx.refresh();
 
-    net.momoka.spring.mapper.db1.UserMapper um =
-      ctx.getBean(net.momoka.spring.mapper.db1.UserMapper.class);
+    UserMapper um =
+      ctx.getBean("userMapper", UserMapper.class);
 
     LOGGER.debug("{}", um);
 
