@@ -1,10 +1,23 @@
 package net.momoka.spring;
 
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+
+
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.
+  AnnotationConfigApplicationContext;
+import org.springframework.web.context.support.
+  AnnotationConfigWebApplicationContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.momoka.spring.model.User;
+import net.momoka.spring.mapper.db1.UserMapper;
 
 public class Main {
 
@@ -13,12 +26,38 @@ public class Main {
 
   public static void main(String[] args) {
 
-    ApplicationContext ctx =
-      new AnnotationConfigApplicationContext(Config.class);
+    AnnotationConfigWebApplicationContext ctx =
+      new AnnotationConfigWebApplicationContext();
 
-    Hello hello = ctx.getBean(Hello.class);
-    LOGGER.debug(hello.getMessage());
+    ctx.register(Config.class);
+    ctx.refresh();
 
+    net.momoka.spring.mapper.db1.UserMapper um =
+      ctx.getBean(net.momoka.spring.mapper.db1.UserMapper.class);
+
+    LOGGER.debug("{}", um);
+
+    User u = um.select(1L);
+    LOGGER.debug("{}", u);
+
+    u.setUsername("username1");
+    um.update(u);
+
+    LOGGER.debug("{}", u);
+
+    u = um.select(1L);
+    LOGGER.debug("{}", u);
+
+    List<User> us = um.all();
+
+    for (User _u: us) {
+      LOGGER.debug("{}", _u);
+    }
+
+    // User nu = new User();
+    // nu.setId(3);
+    // nu.setUsername("username3");
+    //
+    // um.insert(nu);
   }
-
 }
