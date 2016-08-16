@@ -37,10 +37,6 @@ public class Config {
   @Resource
   Environment env;
 
-
-  @Bean(name = "")
-  public Properties config
-
   private ComboPooledDataSource getDataSource(String name)
     throws PropertyVetoException {
     String key;

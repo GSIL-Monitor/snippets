@@ -16,6 +16,24 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
+class Manager {
+
+  private static Manager instance;
+
+  public static Manager getInstance() {
+    if (instance == null) {
+      instance = new Manager();
+    }
+    return instance;
+  }
+
+  public Manager () {
+
+  }
+
+}
+
+
 class Worker {
 
   private static final Logger LOGGER =
@@ -30,6 +48,10 @@ class Worker {
   }
 
   public void addWork (String payload) throws InterruptedException {
+
+    Manager m = Manager.getInstance();
+    LOGGER.info("{}", System. identityHashCode(m));
+
     this.queue.put(payload);
   }
 
