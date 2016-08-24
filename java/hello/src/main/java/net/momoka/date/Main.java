@@ -1,9 +1,8 @@
 package net.momoka.date;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.Date;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +15,12 @@ public class Main {
 
   public static void main (String[] args) {
 
-    Date date = new Date();
+    Calendar now = Calendar.getInstance();
 
-    String output = new SimpleDateFormat("yyyyMMdd").format(date);
+    now.add(Calendar.HOUR, 3);
+
+    String output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").
+      format(now.getTime());
 
     LOGGER.debug(output);
 
