@@ -20,9 +20,9 @@ public interface UserMapper {
   List<User> all();
 
   @Insert("INSERT INTO user (id, username) VALUES (#{id}, #{username})")
-  void insert(User user);
+  int insert(User user);
 
   @Update("UPDATE user SET username = #{username} WHERE id = #{id}")
-  void update(User user);
+  int update(User user);
 
 }

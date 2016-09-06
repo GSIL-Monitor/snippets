@@ -3,13 +3,9 @@ package net.momoka.httpclient;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import org.slf4j.Logger;
@@ -23,38 +19,30 @@ public class Main {
 
 
   public static void main(String[] args)
-    throws IOException, URISyntaxException {
+    throws Exception {
 
-    URI u = new URI("http://knowing.corp.qianka.com/ops_api/notify");
+    // URI u = new URI("http://knowing.corp.qianka.com/ops_api/notify");
+    // String url = "http://guest:guest@n1413.ops.gaoshou.me:15672/api/"
+    //   + "queues/%2f/notify.chenlei.test.urgent/bindings";
 
-    URIBuilder ub = new URIBuilder(u);
-    ub.addParameter("title", "test");
-    ub.addParameter("message", "just a test");
-    u = ub.build();
+    String url = "https://channel.do.baidu.com:8443/idfa/"
+      + "baiduwaimai/compareIdfa";
 
-    LOGGER.debug("{}", u);
+    RequestExecutor ex = new RequestExecutor();
+    Response resp = ex.get(url, null, null);
+    LOGGER.debug(resp.getBodyAsString());
 
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    HttpGet get = new HttpGet(u);
-    CloseableHttpResponse resp = httpclient.execute(get);
-
-    int status = resp.getStatusLine().getStatusCode();
-    LOGGER.debug("status: {}", status);
-    String body = "";
-    if (status == 200){
-
-      try {
-        HttpEntity entity = resp.getEntity();
-        long contentLength = entity.getContentLength();
-        LOGGER.debug("Content-Length: {}", contentLength);
-        body = EntityUtils.toString(entity);
-      }
-      finally {
-        resp.close();
-      }
-      LOGGER.debug("{}", body);
-    }
-
+    // url = "http://127.0.0.1:9292/post";
+    // Map<String, String> params = new TreeMap<String, String>();
+    // params.put("a", "1");
+    // params.put("b", "2");
+    //
+    // resp = ex.post(url, params, null, null);
+    // LOGGER.debug(resp.getBodyAsString());
+    //
+    // url = "http://127.0.0.1:9292/post-body";
+    // resp = ex.post(url, "just a message to test", null, null);
+    // LOGGER.debug(resp.getBodyAsString());
   }
 
 }

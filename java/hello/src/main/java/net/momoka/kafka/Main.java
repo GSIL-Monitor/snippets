@@ -96,6 +96,7 @@ public class Main {
     Properties prop = new Properties();
     prop.put("zookeeper.connect", "n1397.ops.gaoshou.me:2181");
     prop.put("group.id", "test.chenlei");
+    prop.put("auto.offset.reset", "largest");
     ConsumerConfig config = new ConsumerConfig(prop);
     consumer = kafka.consumer.Consumer.createJavaConsumerConnector(config);
 

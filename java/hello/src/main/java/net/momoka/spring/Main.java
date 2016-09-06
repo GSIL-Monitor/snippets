@@ -35,29 +35,10 @@ public class Main {
     UserMapper um =
       ctx.getBean("userMapper", UserMapper.class);
 
-    LOGGER.debug("{}", um);
+    User u = new User();
+    u.setId(1);
+    u.setUsername(new String(new char[256]).replace("\0", "1"));
 
-    User u = um.select(1L);
-    LOGGER.debug("{}", u);
-
-    u.setUsername("username1");
-    um.update(u);
-
-    LOGGER.debug("{}", u);
-
-    u = um.select(1L);
-    LOGGER.debug("{}", u);
-
-    List<User> us = um.all();
-
-    for (User _u: us) {
-      LOGGER.debug("{}", _u);
-    }
-
-    // User nu = new User();
-    // nu.setId(3);
-    // nu.setUsername("username3");
-    //
-    // um.insert(nu);
+    um.insert(u);
   }
 }

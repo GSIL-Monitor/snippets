@@ -65,7 +65,7 @@ public class Config {
 
     rv.setDriverClass(driverClass);
     String url = String.format(
-      "jdbc:mysql://%s:%d/%s?allowMultiQueries=true",
+      "jdbc:mysql://%s:%d/%s?jdbcCompliantTruncation=false",
       host, port, dbName);
 
     rv.setJdbcUrl(url);

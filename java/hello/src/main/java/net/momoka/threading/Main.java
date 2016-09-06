@@ -91,6 +91,7 @@ class WorkerThread implements Runnable {
   @Override
   public void run () {
     String payload = null;
+    payload.equals("");
     while (this.running) {
       try {
         payload = this.queue.take();
