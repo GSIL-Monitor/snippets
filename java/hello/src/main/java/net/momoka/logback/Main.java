@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
   private static final Logger LOGGER =
-    LoggerFactory.getLogger(Main.class);
+    LoggerFactory.getLogger("chen_lei");
 
   public Main() {
 
@@ -23,7 +23,7 @@ public class Main {
     app.start();
 
     ch.qos.logback.classic.Logger logger =
-      (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Main.class);
+      (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("chen_lei");
     logger.addAppender(app);
     logger.setLevel(Level.DEBUG);
     logger.setAdditive(true);

@@ -1,0 +1,33 @@
+---
+debug: True
+
+database:
+  zhuanqian:
+    adapter: mysql
+    connector: mysqldb
+    user: pyjob
+    pass: 177b87ab31
+    # host: itunesregister1.mysql.rds.aliyuncs.com
+    host: 10.141.79.102
+    port: 3306
+    db: zhuanqian
+    pool: true
+  zhuanqian_001:
+    adapter: mysql
+    connector: mysqldb
+    host: zhuanqian001.mysql.rds.aliyuncs.com
+    port: 3306
+    user: pyjob
+    pass: 177b87ab31
+    db: zhuanqian
+    pool: true
+  idfa:
+    adapter: mysql
+    connector: mysqldb
+    user: pyjob
+    pass: 177b87ab31
+    # host: rdsx8a644258rbp8vi33.mysql.rds.aliyuncs.com
+    host: 100.98.143.10
+    port: 3306
+    db: idfa_check
+    pool: true

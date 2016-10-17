@@ -1,0 +1,1 @@
+-e git+file:///home/momoka/src/python/rq#egg=rq

@@ -1,0 +1,12 @@
+{
+  "name": "momoka/laravel",
+  "authors": [
+    {
+      "name": "80x24",
+      "email": "80x24@momoka.net"
+    }
+  ],
+  "require": {
+    "laravel/laravel": "^5.2"
+  }
+}

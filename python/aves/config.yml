@@ -1,0 +1,42 @@
+---
+database:
+  qk_action:
+    connector: mysqldb
+    adapter: mysql
+    user: qk_action
+    pass: 58b2c7723ae58d82d9e7d774830f4836
+    host: rdsaujjjfujryia.mysql.rds.aliyuncs.com
+    port: 3306
+    db: qk_action
+    echo: false
+    pool: false
+  zhuanqian:
+    connector: mysqldb
+    adapter: mysql
+    user: pyjob
+    pass: 177b87ab31
+    host: itunesregister1.mysql.rds.aliyuncs.com
+    port: 3306
+    db: zhuanqian
+    echo: false
+    pool: false
+  zhuanqian_shard1:
+    connector: mysqldb
+    adapter: mysql
+    user: root
+    pass:
+    host: 127.0.0.1
+    port: 3306
+    db: zhuanqian_test
+    echo: false
+    pool: true
+  zhuanqian_shard2:
+    connector: mysqldb
+    adapter: mysql
+    user: dbaroot
+    pass:
+    host: 192.168.1.234
+    port: 3306
+    db: zhuanqian_test
+    echo: false
+    pool: false

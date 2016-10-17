@@ -1,6 +1,8 @@
 package net.momoka.udp;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
@@ -13,6 +15,12 @@ import com.qianka.util.concurrent.ThreadPool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+interface UDPHandler {
+
+  void handle(byte[] payload);
+
+}
 
 class UDPServer {
 
@@ -27,6 +35,7 @@ class UDPServer {
   protected int port = 0;
   protected boolean inited = false;
   protected BlockingQueue<byte[]> q = null;
+  protected Class <? extends UDPHandler> handlerClass = null;
 
   protected int bufSize = 1024;
 
@@ -55,6 +64,10 @@ class UDPServer {
     this.bufSize = s;
   }
 
+  public void setHandlerClass(Class <? extends UDPHandler> handlerClass) {
+    this.handlerClass = handlerClass;
+  }
+
   public void init() throws SocketException {
 
     if (inited)
@@ -72,7 +85,7 @@ class UDPServer {
     }
 
     serverFactory = new ServerRunnableFactory(socket, q);
-    workerFactory = new WorkerRunnableFactory(q);
+    workerFactory = new WorkerRunnableFactory(q, handlerClass);
     server = new ThreadPool(
       "udp-server",
       socketPoolSize,
@@ -166,9 +179,11 @@ class WorkerRunnable implements Runnable {
     LoggerFactory.getLogger(WorkerRunnable.class);
 
   protected BlockingQueue<byte[]> q;
+  protected UDPHandler handler;
 
-  public WorkerRunnable (BlockingQueue<byte[]> q) {
+  public WorkerRunnable (BlockingQueue<byte[]> q, UDPHandler handler) {
     this.q = q;
+    this.handler = handler;
   }
 
   @Override
@@ -177,7 +192,7 @@ class WorkerRunnable implements Runnable {
     while(true) {
       try {
         byte[] payload = q.take();
-        LOGGER.debug(new String(payload));
+        handler.handle(payload);
       }
       catch(InterruptedException e) {
         return;
@@ -190,17 +205,48 @@ class WorkerRunnable implements Runnable {
 class WorkerRunnableFactory implements RunnableFactory {
 
   protected BlockingQueue<byte[]> q;
+  protected Class <? extends UDPHandler> handlerClass;
 
-  public WorkerRunnableFactory(BlockingQueue<byte[]> q) {
+  public WorkerRunnableFactory(
+    BlockingQueue<byte[]> q, Class <? extends UDPHandler> handlerClass) {
     this.q = q;
+    this.handlerClass = handlerClass;
   }
 
   @Override
   public Runnable newRunnable() {
-    WorkerRunnable rv = new WorkerRunnable(q);
-    return rv;
+    try {
+      Constructor<?> ctor = handlerClass.getConstructor();
+      UDPHandler handler = (UDPHandler) ctor.newInstance();
+      WorkerRunnable rv = new WorkerRunnable(q, handler);
+      return rv;
+    }
+    catch(
+      NoSuchMethodException |
+      InstantiationException |
+      IllegalAccessException |
+      InvocationTargetException e) {
+      e.printStackTrace();
+      return null;
+    }
+
   }
 
+}
+
+class MyUDPHandler implements UDPHandler {
+
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(MyUDPHandler.class);
+
+  public MyUDPHandler() {
+
+  }
+
+  @Override
+  public void handle(byte[] payload) {
+    LOGGER.debug(new String(payload));
+  }
 }
 
 public class Main {
@@ -216,6 +262,7 @@ public class Main {
 
     UDPServer server = new UDPServer(4000);
     server.setWorkerPoolSize(16);
+    server.setHandlerClass(MyUDPHandler.class);
     server.start();
 
     for(int i = 0; i < 5; i++) {

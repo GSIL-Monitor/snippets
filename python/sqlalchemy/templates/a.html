@@ -1,0 +1,9 @@
+# -*- coding: utf-8 -*-
+
+class {{ table.name }}:
+
+    __tablename__ = '{{ table.name }}'
+
+{% for col in table.columns %}
+    {{ col.name }} = Column({{col.type}}{% if col.primary_key %}, primary_key=True{% endif%}{% if not col.nullable %}, nullable=False{% endif %})
+{% endfor -%}

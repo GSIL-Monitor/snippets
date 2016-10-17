@@ -1,5 +1,6 @@
 package net.momoka.ssh;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -57,22 +58,34 @@ public class Main {
     InputStream is = channel.getInputStream();
 
     channel.setInputStream(null);
-    // channel.setErrStream(errPipe);
+    channel.setErrStream(errPipe);
     channel.setCommand("hostname");
     channel.connect();
     channel.start();
     while(!channel.isEOF())
       Thread.sleep(100);
 
-    int n = is.available();
+    BufferedInputStream bis = new BufferedInputStream(is);
+    int n = bis.available();
     byte[] buf = new byte[n];
 
     for (int i = 0; i < n; i++) {
-      buf[i] = (byte) is.read();
+      buf[i] = (byte) bis.read();
     }
 
     LOGGER.debug(new String(buf));
 
+    bis = new BufferedInputStream(errIs);
+    n = bis.available();
+    buf = new byte[n];
+
+    for (int i = 0; i < n; i++) {
+      buf[i] = (byte) bis.read();
+    }
+
+    LOGGER.debug(new String(buf));
+
+    bis.close();
     is.close();
     errPipe.close();
 

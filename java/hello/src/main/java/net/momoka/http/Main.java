@@ -15,8 +15,6 @@ public class Main {
   }
 
   public static void main(String[] args) throws Exception {
-    HttpService.setExecutor(HttpService.Executor.HTTPCLIENT);
-
     String url = "https://channel.do.baidu.com:8443/idfa/"
       + "baiduwaimai/compareIdfa";
 

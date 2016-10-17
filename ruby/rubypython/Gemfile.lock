@@ -1,0 +1,22 @@
+GIT
+  remote: https://github.com/halostatue/rubypython
+  revision: c491c324f36b36daf1bcf723c485f8f2c93d9787
+  specs:
+    rubypython (0.6.3)
+      blankslate (>= 2.1.2.3)
+      ffi (~> 1.0.7)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    blankslate (3.1.3)
+    ffi (1.0.11)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rubypython!
+
+BUNDLED WITH
+   1.11.2

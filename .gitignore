@@ -1,0 +1,10 @@
+node_modules/
+bower_components/
+
+*.log
+*.pid
+*.py[co]
+*.o
+*.a
+*.jar
+*.egg-info/

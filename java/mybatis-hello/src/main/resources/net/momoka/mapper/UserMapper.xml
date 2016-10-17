@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+  'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace='net.momoka.mapper.UserMapper'>
+
+  <select id='getUser' resultType='net.momoka.model.User'>
+     SELECT
+      Host as host,
+      User as user
+     FROM user
+     WHERE Host = #{host,javaType=String} and User = #{user,javaType=String}
+  </select>
+
+</mapper>

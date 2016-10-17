@@ -1,0 +1,2 @@
+worker1: while true; do date; sleep 1; done
+web1: sleep 5; echo 1;

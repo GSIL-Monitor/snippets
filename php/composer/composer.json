@@ -1,0 +1,13 @@
+{
+    "name": "momoka/snippets",
+    "authors": [
+        {
+            "name": "momoka",
+            "email": "aleiphoenix@gmail.com"
+        }
+    ],
+    "require": {
+	"symfony/yaml": "2.6.1"
+    }
+}
+

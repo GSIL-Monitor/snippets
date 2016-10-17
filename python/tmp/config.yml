@@ -1,0 +1,17 @@
+---
+database:
+  zhuanqian:
+    adapter: mysql
+    connector: mysqldb
+    host: itunesregister1.mysql.rds.aliyuncs.com
+    port: 3306
+    user: db_zhuanqian
+    pass: 73ea3a01584edfc2
+    db: zhuanqian
+
+redis:
+  backend:
+    host: 10.168.41.228
+    port: 6381
+    password:
+    db: 0

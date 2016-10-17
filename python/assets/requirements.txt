@@ -1,0 +1,4 @@
+cssmin
+
+-e git+ssh://git@git.corp.qianka.com/qianka/qianka-sqlalchemy#egg=qianka-sqlalchemy
+-e git+ssh://git@git.corp.qianka.com/qianka/qianka-flaskext#egg=qianka-flaskext

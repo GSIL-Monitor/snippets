@@ -1,0 +1,1 @@
+-e git+ssh://git@git.qianka.com/chenlei/aves#egg=aves

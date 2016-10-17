@@ -28,5 +28,11 @@ public class Main {
 
     LOGGER.debug("{}", sb.toString());
 
+    String filePath = "/tmp/hello/world.txt";
+
+    int n = filePath.lastIndexOf("/");
+    LOGGER.debug(filePath.substring(0, n));
+    LOGGER.debug(filePath.substring(n + 1, filePath.length()));
+
   }
 }

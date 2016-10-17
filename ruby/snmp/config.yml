@@ -1,0 +1,12 @@
+host: 172.16.0.1
+
+interval: 10
+
+statsd:
+  host: n1391.ops.gaoshou.me
+  port: 8125
+
+interfaces:
+  WAN1: 16777217
+  WAN2: 16777218
+  VLAN1: 385875968

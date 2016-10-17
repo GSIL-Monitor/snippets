@@ -1,0 +1,39 @@
+statd:
+  host: n1384.ops.gaoshou.me
+  port: 8125
+
+monitor:
+  - name: biz.zq_api_pending_action:%s|g
+    command: redis-cli -h n1385.ops.gaoshou.me -a 10c48388d7d9d2e41da207c6d1010877 llen zq_api:actions | cut -f 2
+    interval: 15000
+  - name: biz.eeyore.idfa_queue:%s|g
+    command: redis-cli llen qianka:eeyore:idfa_queue | cut -f 2
+    interval: 60000
+  - name: biz.eeyore.user_queue:%s|g
+    command: redis-cli -h 89237f81dd1011e4.m.cnhza.kvstore.aliyuncs.com -a 89237f81dd1011e4:TiggerSession1 scard zhuanqian:subtasks:idfa | cut -f 2
+    interval: 60000
+  - name: biz.task_notify_pending:%s|g
+    command: mysql -h itunesregister1.mysql.rds.aliyuncs.com -u db_zhuanqian -p73ea3a01584edfc2 zhuanqian -ANs -e "select count(*) from task_notify_queue where status = 0" 2>/dev/null
+    interval: 5000
+  - name: biz.task_notify_pending_send:%s|g
+    command: redis-cli -n 1 llen qianka:notify:pending_send | cut -f 2
+    interval: 5000
+  - name: biz.task_notify_pending_write_back:%s|g
+    command: redis-cli -n 1 llen qianka:notify:pending_write_back | cut -f 2
+    interval: 5000
+  - name: biz.zs_task_pending_ios:%s|g
+    command: mysql -h itunesregister1.mysql.rds.aliyuncs.com -u db_zhuanqian -p73ea3a01584edfc2 zhuanqian -ANs -e "select count(*) from zs_task_user_state where status = 1 and job_execute=0" 2>/dev/null
+    interval: 5000
+  - name: biz.zs_task_pending_android:%s|g
+    command: mysql -h itunesregister1.mysql.rds.aliyuncs.com -u db_zhuanqian -p73ea3a01584edfc2 zhuanqian -ANs -e "select count(*) from android_zs_task_user_state where status = 1 and job_execute=0" 2>/dev/null
+    interval: 5000
+  - name: biz.available_xs_tasks_ios:%s|g
+    command: mysql -h itunesregister1.mysql.rds.aliyuncs.com -u db_zhuanqian -p73ea3a01584edfc2 zhuanqian -ANs -e "select sum(subsurplus) from subtasks where sub_starttime<=now() and sub_endtime>=now() and substop=0 and is_suspend=0 and ((ad_id=0 and check_status=0) or (ad_id>0 and check_status=1))" 2>/dev/null
+    interval: 15000
+  - name: biz.pay.weixin.pending_user_convert:%s|g
+    command: redis-cli -h n1375.ops.gaoshou.me llen push:user:convert:status | cut -f 2
+    interval: 15000
+  - name: biz.pay.weixin.pending_wechat_convert:%s|g
+    command: redis-cli -h n1375.ops.gaoshou.me llen wechat:convert:queue | cut -f 2
+    interval: 15000
+

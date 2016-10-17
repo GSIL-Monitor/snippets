@@ -11,8 +11,9 @@ status = logging.getLogger('status')
 
 while True:
     s = random.random()
+    s = 2
     time.sleep(s)
 
-    logger.debug('debug')
-    logger.warning('warning')
-    status.warning('warning')
+    logger.debug('调试！！！')
+    logger.warning('警告！！！')
+    status.warning('警告！！！')
