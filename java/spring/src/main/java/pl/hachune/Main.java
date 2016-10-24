@@ -1,7 +1,6 @@
 package pl.hachune;
 
 import javax.servlet.Servlet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
