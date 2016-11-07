@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from functools import update_wrapper
 
 import flask
 import ioc

@@ -2,35 +2,19 @@ package net.momoka;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UploadResult {
+public class UploadResult implements DataResult {
 
-  // @JsonProperty("status")
-  private String status;
-
-  // @JsonProperty("err_msg")
-  private String errorMessage;
-
-  // @JsonProperty("filename")
+  @JsonProperty("filename")
   private String filename;
 
-  // @JsonProperty("bucket")
-  private String bucket;
+  @JsonProperty("height")
+  private int height;
 
-  public String getStatus() {
-    return status;
-  }
+  @JsonProperty("width")
+  private int width;
 
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public String getErrorMessage() {
-    return errorMessage;
-  }
-
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-  }
+  @JsonProperty("format")
+  private String format;
 
   public String getFilename() {
     return filename;
@@ -40,12 +24,28 @@ public class UploadResult {
     this.filename = filename;
   }
 
-  public String getBucket() {
-    return bucket;
+  public int getHeight() {
+    return height;
   }
 
-  public void setBucket(String bucket) {
-    this.bucket = bucket;
+  public void setHeight(int height) {
+    this.height = height;
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public void setWidth(int width) {
+    this.width = width;
+  }
+
+  public String getFormat() {
+    return format;
+  }
+
+  public void setFormat(String format) {
+    this.format = format;
   }
 
 }

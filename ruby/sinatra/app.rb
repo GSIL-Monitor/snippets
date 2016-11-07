@@ -81,11 +81,19 @@ end
 
 post '/' do
   p params
+
+  request.body.rewind
+  p request.body.read
+
   ''
 end
 
 post '/post' do
   p params
+
+  request.body.rewind
+  p request.body.read
+
   params.to_s
 end
 

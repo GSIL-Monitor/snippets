@@ -34,5 +34,7 @@ public class Main {
     LOGGER.debug(filePath.substring(0, n));
     LOGGER.debug(filePath.substring(n + 1, filePath.length()));
 
+    LOGGER.debug("ffwjifw//".replaceAll("\\/+$", ""));
+
   }
 }

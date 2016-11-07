@@ -2,8 +2,11 @@
 import logging
 import ioc
 
+from sqlalchemy.orm import sessionmaker
+
 from demo.dao.post import PostDao
 from demo.model.post import PostModel
+
 
 class PostDaoSqlalchemy(PostDao):
 
@@ -14,7 +17,7 @@ class PostDaoSqlalchemy(PostDao):
         self.session_factory = None
 
     def post_construct(self):
-        self.session_factory = ioc.inject('db_session_factory')
+        self.session_factory = ioc.inject('db_session_factory', sessionmaker)
 
     def all(self):
         logging.debug(self.session_factory)

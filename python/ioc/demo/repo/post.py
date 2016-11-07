@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import ioc
 
+from demo.dao.post import PostDao
+
 class PostRepo(object):
 
     # attrs:
@@ -10,7 +12,7 @@ class PostRepo(object):
         pass
 
     def post_construct(self):
-        self.post_dao = ioc.inject('post_dao')
+        self.post_dao = ioc.inject('post_dao', PostDao)
 
     def all(self):
         return self.post_dao.all()

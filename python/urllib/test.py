@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+import logging
+logging.basicConfig(level=logging.DEBUG)
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 payload = dict(idfa='ABC', ipv4='1.2.3.4')
@@ -30,3 +31,21 @@ u_dist = (u.scheme, u.netloc, u.path, '', qs_dist, '')
 url = urlunparse(u_dist)
 
 print('request to: %s' % url)
+
+from httpclient import get, post
+
+resp = get('http://127.0.0.1:4567/')
+logging.debug(resp.code)
+logging.debug(resp.message)
+logging.debug(resp.body)
+
+resp = post('http://127.0.0.1:4567/post', data={'a': 1, 'b': 2})
+logging.debug(resp.code)
+logging.debug(resp.message)
+logging.debug(resp.body)
+
+resp = post('http://127.0.0.1:4567/post',
+            data=open('/tmp/a', 'rb'))
+logging.debug(resp.code)
+logging.debug(resp.message)
+logging.debug(resp.body)

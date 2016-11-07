@@ -1,10 +1,12 @@
 package net.momoka;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import javax.imageio.ImageIO;
 
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.PutObjectResult;
@@ -61,7 +63,11 @@ public class Cli {
 
     is.reset();
 
-    upload(md5, is);
+    BufferedImage bi = ImageIO.read(is);
+    LOGGER.debug("height: {}", bi.getHeight());
+    LOGGER.debug("width: {}", bi.getWidth());
+
+    // upload(md5, is);
 
     os.close();
     is.close();

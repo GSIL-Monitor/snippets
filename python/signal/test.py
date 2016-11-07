@@ -5,6 +5,7 @@ import sys
 import time
 
 
+logging.basicConfig(level=logging.DEBUG)
 
 class Tester(object):
 
@@ -16,6 +17,7 @@ class Tester(object):
         self._quit = False
 
         def signal_handler(sig, frame):
+            logging.error('signal: %s' % sig)
             if sig in (signal.SIGINT, signal.SIGTERM):
                 # graceful exit
                 logging.error('graceful shutdown...')
@@ -29,8 +31,6 @@ class Tester(object):
         signal.signal(signal.SIGQUIT, signal_handler)
         signal.signal(signal.SIGINT, signal_handler)
         return self
-
-
 
     def join(self):
         while self._quit is False:

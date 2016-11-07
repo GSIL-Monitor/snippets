@@ -1,0 +1,16 @@
+<dataset>
+  <table name="dconfig">
+    <data>
+      <row>
+	<config_name>dconfig.interval</config_name>
+	<config_type>integer</config_type>
+	<config_value>60</config_value>
+      </row>
+      <row>
+	<config_name>debug</config_name>
+	<config_type>integer</config_type>
+	<config_value>0</config_value>
+      </row>
+    </data>
+  </table>
+</dataset>

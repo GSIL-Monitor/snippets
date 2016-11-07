@@ -13,6 +13,8 @@ import javax.servlet.Servlet;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.context.support
+  .AnnotationConfigWebApplicationContext;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -106,8 +108,13 @@ public class Jetty {
     webAppContext.setContextPath(contextPath);
     webAppContext.setResourceBase(resourcePath);
 
-    XmlWebApplicationContext appContext = new XmlWebApplicationContext();
-    appContext.setConfigLocation("classpath*:/dispatcher-servlet.xml");
+    // XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+    // appContext.setConfigLocation("classpath*:/dispatcher-servlet.xml");
+
+    AnnotationConfigWebApplicationContext appContext =
+      new AnnotationConfigWebApplicationContext();
+
+    appContext.register(WebConfig.class);
 
     webAppContext.addEventListener(new ContextLoaderListener(appContext));
 

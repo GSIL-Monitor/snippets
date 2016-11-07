@@ -91,6 +91,6 @@ class BeanObject(object):
         return '<#BeanObject %s>' % self.name
 
 
-def inject(name, clazz=None):
+def inject(name, clazz):
     global context
     return context.get_bean(name, clazz)
