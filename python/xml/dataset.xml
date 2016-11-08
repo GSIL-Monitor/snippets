@@ -1,16 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <table name="dconfig">
-    <data>
+  <table name="order">
+    <rows>
       <row>
-	<config_name>dconfig.interval</config_name>
-	<config_type>integer</config_type>
-	<config_value>60</config_value>
+	<id>1</id>
+	<order_no>1699521050188447389</order_no>
+	<order_state>10</order_state>
+	<refund_state>0</refund_state>
+	<feedback_state>0</feedback_state>
+	<user_id>17389</user_id>
+	<subtotal_price>102.5</subtotal_price>
+	<grand_total_price>102.5</grand_total_price>
+	<shipping_cost>20</shipping_cost>
+	<discount_amount>0</discount_amount>
+	<product_amount>5</product_amount>
+	<is_hidden>0</is_hidden>
+	<created_at>1999-01-01 00:00:01</created_at>
+	<updated_at>1999-01-01 00:00:01</updated_at>
       </row>
+    </rows>
+  </table>
+  <table name="order_sub">
+    <rows>
       <row>
-	<config_name>debug</config_name>
-	<config_type>integer</config_type>
-	<config_value>0</config_value>
+	<id>1</id>
+	<order_no>1699924709835727389</order_no>
+	<order_id>1</order_id>
+	<order_state>10</order_state>
+	<refund_state>0</refund_state>
+	<feedback_state>0</feedback_state>
+	<user_id>17389</user_id>
+	<sku_id>1</sku_id>
+	<sku_info>测试子订单001的SKU信息</sku_info>
+	<product_id>1</product_id>
+	<product_title>测试商品001</product_title>
+	<grand_total_price>102.5</grand_total_price>
+	<unit_price>20.5</unit_price>
+	<quantity>5</quantity>
+	<note>测试子订单001的备注</note>
+	<ordered_datetime>2016-11-01 00:00:00</ordered_datetime>
+	<paid_datetime>2016-11-02 11:11:11</paid_datetime>
+	<shipping_datetime>2016-11-03 22:22:22</shipping_datetime>
+	<complete_datetime>2016-11-04 13:33:33</complete_datetime>
+	<created_at>1999-01-01 00:00:01</created_at>
+	<updated_at>1999-01-01 00:00:01</updated_at>
       </row>
-    </data>
+    </rows>
   </table>
 </dataset>
