@@ -6,7 +6,6 @@ import random
 import time
 
 from dbunit.generator import Generator
-from lxml import etree
 
 from chengpin import ctx, inject
 from chengpin.boot import CpConfig
@@ -20,18 +19,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 order_ids = set()
 
-def to_xml(_):
-    row = etree.Element('row')
-    for c in _.__columns__:
-        cld = etree.SubElement(row, c)
-        v = getattr(_, c)
-        if type(v) == Decimal:
-            v = '%.2f' % v
-        if type(v) == datetime:
-            v = v.strftime('%Y-%m-%d %H:%M:%S')
-        cld.text = str(v)
-
-    return etree.tostring(row, pretty_print=True)
 
 orangers = {
     'id': None,
@@ -59,7 +46,7 @@ odrangers = {
     'snapshot_key': 'c4ca4238a0b923820dcc509a6f75849b',
     'unit_price': lambda : Decimal(random.random() * 100 + 50),
     'real_unit_price': lambda: Decimal(random.random() * 50),
-    'quantity': lambda : int(random.random() * 10),
+    'quantity': lambda : int(random.random() * 10) + 1,
     'created_at': lambda: datetime.now(),
     'updated_at': lambda: datetime.now(),
 }
@@ -81,13 +68,12 @@ for i in range(1, 61):
     o.id = order_id
     if o.preprocess_state == 200:
         o.order_state = 100
-    s = to_xml(o)
 
     d = odg.generate()
     d.order_id = order_id
 
-    orders.append(to_xml(o).decode('UTF-8'))
-    details.append(to_xml(d).decode('UTF-8'))
+    orders.append(o.to_xml().decode('UTF-8'))
+    details.append(d.to_xml().decode('UTF-8'))
 
 print('<?xml version="1.0" encoding="UTF-8"?>')
 print('<dataset>')
