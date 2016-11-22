@@ -19,7 +19,7 @@ test = os.environ.get('TEST') is not None
 engine = None
 if test:
     engine = create_engine(
-        'mysql+pymysql://root:123456@cn1001.ops.gaoshou.me/'
+        'mysql+pymysql://dbaroot@172.16.3.234/'
         'chengpin?charset=utf8', echo=True)
 else:
     engine = create_engine(
@@ -35,5 +35,6 @@ logging.debug(pprint.pformat(dataset.data_rows))
 
 op = DatabaseOperation()
 
-op.truncate(session, dataset)
+if not test:
+    op.truncate(session, dataset)
 op.insert(session, dataset)
