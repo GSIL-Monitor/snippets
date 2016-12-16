@@ -1,13 +1,19 @@
 package pl.hachune;
 
-import javax.servlet.Servlet;
+import java.util.List;
+
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.ecs.model.v20140526.DescribeInstancesRequest;
+import com.aliyuncs.ecs.model.v20140526.DescribeInstancesResponse;
+import com.aliyuncs.ecs.model.v20140526.DescribeInstancesResponse.Instance;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.exceptions.ServerException;
+
+import org.springframework.context.annotation.
+  AnnotationConfigApplicationContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.XmlWebApplicationContext;
-import com.qianka.util.jetty.Jetty;
 
 
 public class Main {
@@ -19,15 +25,57 @@ public class Main {
 
   }
 
-  public static void main(String[] args) {
-    XmlWebApplicationContext appContext = new XmlWebApplicationContext();
-    appContext.setConfigLocation("classpath*:/dispatcher-servlet.xml");
+  public static void main(String[] args) throws InterruptedException {
 
-    Servlet s = new DispatcherServlet(appContext);
+    AnnotationConfigApplicationContext ctx =
+      new AnnotationConfigApplicationContext();
 
-    Jetty jetty = new Jetty();
-    jetty.addEventListener(new ContextLoaderListener(appContext));
-    jetty.addHandlerMapping("/", s);
-    jetty.start();
+    ctx.register(Config.class);
+    ctx.refresh();
+
+    IAcsClient client = ctx.getBean(IAcsClient.class);
+    LOGGER.debug("{}", client);
+
+    int page = 1;
+
+    try {
+
+      while (true) {
+        DescribeInstancesRequest req = new DescribeInstancesRequest();
+        req.setPageNumber(page);
+        req.setPageSize(30);
+
+        LOGGER.debug("{}", page);
+        DescribeInstancesResponse resp = client.getAcsResponse(req);
+        LOGGER.debug("{}", resp);
+        List<Instance> instances = resp.getInstances();
+        if (instances.size() <= 0) {
+          break;
+        }
+
+        for (Instance inst: instances) {
+          LOGGER.debug("InstanceId: {}", inst.getInstanceId());
+          LOGGER.debug("InstanceName: {}", inst.getInstanceName());
+          LOGGER.debug("Hostname: {}", inst.getHostName());
+          LOGGER.debug("Description: {}", inst.getDescription());
+          LOGGER.debug("Cpu: {}", inst.getCpu());
+          LOGGER.debug("Memory: {}", inst.getMemory());
+          LOGGER.debug("Status: {}", inst.getStatus());
+          LOGGER.debug("=========");
+        }
+
+        page++;
+
+      }
+
+    }
+    catch (ServerException e) {
+      e.printStackTrace();
+    }
+    catch (ClientException e) {
+      e.printStackTrace();
+    }
+
   }
+
 }
