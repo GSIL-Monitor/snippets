@@ -9,7 +9,7 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <logger name="org.eclipse" level="debug" additivity="false">
+    <logger name="org.eclipse" level="info" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
@@ -17,7 +17,7 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

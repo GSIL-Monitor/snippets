@@ -1,4 +1,4 @@
-package pl.hachune;
+package pl.hachune.scheduling;
 
 import java.util.Date;
 

@@ -1,5 +1,8 @@
 package pl.hachune;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,6 +21,8 @@ import com.aliyuncs.profile.IClientProfile;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.DefaultAcsClient;
 
+import pl.hachune.models.Person;
+
 @Configuration
 @PropertySources(
   value = {
@@ -26,7 +31,7 @@ import com.aliyuncs.DefaultAcsClient;
   }
 )
 @EnableScheduling
-@ComponentScan(basePackages="pl.hachune")
+@ComponentScan(basePackages="pl.hachune.scheduling")
 public class Config {
 
   private static final Logger LOGGER =
@@ -50,6 +55,24 @@ public class Config {
     IClientProfile profile = DefaultProfile.getProfile(
         "cn-hangzhou", aliyunKey, aliyunSecret);
     IAcsClient rv = new DefaultAcsClient(profile);
+    return rv;
+  }
+
+  @Bean
+  public List<Person> persons() {
+    List<Person> rv = new ArrayList<Person>();
+
+    Person p;
+    p = new Person();
+    p.setName("p1");
+    rv.add(p);
+    p = new Person();
+    p.setName("p2");
+    rv.add(p);
+    p = new Person();
+    p.setName("p3");
+    rv.add(p);
+
     return rv;
   }
 
