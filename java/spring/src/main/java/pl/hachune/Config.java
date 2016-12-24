@@ -3,6 +3,14 @@ package pl.hachune;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +28,8 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.DefaultAcsClient;
+
+import com.qianka.util.http.HttpService;
 
 import pl.hachune.models.Person;
 
@@ -45,6 +55,21 @@ public class Config {
 
   @Value("${aliyun.access.secret}")
   public String aliyunSecret;
+
+  @Value("${yuntongxun.accountSid}")
+  public String ytxAccountSid;
+
+  @Value("${yuntongxun.accountToken}")
+  public String ytxAccountToken;
+
+  @Value("${yuntongxun.appId}")
+  public String ytxAppId;
+
+  @Value("${yuntongxun.apiBase}")
+  public String ytxApiBase;
+
+  @Value("${yuntongxun.displayNumber}")
+  public String ytxDisplayNumber;
 
   @Bean("acsClient")
   public IAcsClient acsClient() {
@@ -75,5 +100,39 @@ public class Config {
 
     return rv;
   }
+
+  @Bean
+  public HttpService httpService() {
+    HttpService rv = new HttpService();
+    return rv;
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    ObjectMapper rv = new ObjectMapper();
+    rv.configure(
+      DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    rv.configure(
+      SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+    rv.setSerializationInclusion(Include.NON_NULL);
+    rv.setPropertyNamingStrategy(
+      PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+
+    rv.configure(
+      SerializationFeature.INDENT_OUTPUT, true);
+    return rv;
+  }
+
+  @Bean
+  public YuntongxunNotify yuntongxunNotify() {
+    YuntongxunNotify rv = new YuntongxunNotify();
+    rv.setAccountSid(ytxAccountSid);
+    rv.setAccountToken(ytxAccountToken);
+    rv.setAppId(ytxAppId);
+    rv.setApiBase(ytxApiBase);
+    rv.setDisplayNumber(ytxDisplayNumber);
+    return rv;
+  }
+
 
 }

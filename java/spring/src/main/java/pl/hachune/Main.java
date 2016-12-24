@@ -47,11 +47,15 @@ public class Main {
 
     Jetty jetty = jettyCtx.getBean(Jetty.class);
     jetty.setContext(webCtx);
-    jetty.start();
-    webCtx.refresh();
+    //jetty.start();
+    //webCtx.refresh();
 
     IAcsClient client = ctx.getBean(IAcsClient.class);
     LOGGER.debug("{}", client);
+
+    YuntongxunNotify y = ctx.getBean(YuntongxunNotify.class);
+    boolean rs = y.notify("13818391941", "01234567");
+    LOGGER.debug("{}", rs);
 
     // int page = 1;
     //
