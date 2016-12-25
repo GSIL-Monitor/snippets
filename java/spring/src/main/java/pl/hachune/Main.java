@@ -17,6 +17,7 @@ import org.springframework.web.context.support.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.hachune.zeromq.Sub;
 
 public class Main {
 
@@ -53,9 +54,9 @@ public class Main {
     IAcsClient client = ctx.getBean(IAcsClient.class);
     LOGGER.debug("{}", client);
 
-    YuntongxunNotify y = ctx.getBean(YuntongxunNotify.class);
-    boolean rs = y.notify("13818391941", "01234567");
-    LOGGER.debug("{}", rs);
+    // YuntongxunNotify y = ctx.getBean(YuntongxunNotify.class);
+    // boolean rs = y.notify("13818391941", "01234567");
+    // LOGGER.debug("{}", rs);
 
     // int page = 1;
     //
@@ -96,6 +97,13 @@ public class Main {
     // catch (ClientException e) {
     //   e.printStackTrace();
     // }
+
+    Sub subscriber = ctx.getBean(Sub.class);
+
+    while (true) {
+      String msg = subscriber.recv();
+      LOGGER.debug(msg);
+    }
 
   }
 

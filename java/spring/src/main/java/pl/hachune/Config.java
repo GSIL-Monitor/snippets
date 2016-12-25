@@ -32,6 +32,7 @@ import com.aliyuncs.DefaultAcsClient;
 import com.qianka.util.http.HttpService;
 
 import pl.hachune.models.Person;
+import pl.hachune.zeromq.Sub;
 
 @Configuration
 @PropertySources(
@@ -131,6 +132,12 @@ public class Config {
     rv.setAppId(ytxAppId);
     rv.setApiBase(ytxApiBase);
     rv.setDisplayNumber(ytxDisplayNumber);
+    return rv;
+  }
+
+  @Bean
+  public Sub subscriber() {
+    Sub rv = new Sub();
     return rv;
   }
 
