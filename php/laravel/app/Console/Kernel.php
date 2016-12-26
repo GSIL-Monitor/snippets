@@ -9,6 +9,7 @@ class Kernel extends ConsoleKernel
 {
 
     protected $commands = [
+        RabbitMQ\Consumer::class,
     ];
 
     protected function schedule(Schedule $schedule) {

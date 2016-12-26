@@ -5,14 +5,16 @@
     1 => 'Illuminate\\Filesystem\\FilesystemServiceProvider',
     2 => 'Illuminate\\Database\\DatabaseServiceProvider',
     3 => 'Illuminate\\View\\ViewServiceProvider',
-    4 => 'App\\Providers\\RouteServiceProvider',
+    4 => 'Qianka\\RabbitMQ\\RabbitMQServiceProvider',
+    5 => 'App\\Providers\\RouteServiceProvider',
   ),
   'eager' => 
   array (
     0 => 'Illuminate\\Filesystem\\FilesystemServiceProvider',
     1 => 'Illuminate\\Database\\DatabaseServiceProvider',
     2 => 'Illuminate\\View\\ViewServiceProvider',
-    3 => 'App\\Providers\\RouteServiceProvider',
+    3 => 'Qianka\\RabbitMQ\\RabbitMQServiceProvider',
+    4 => 'App\\Providers\\RouteServiceProvider',
   ),
   'deferred' => 
   array (
