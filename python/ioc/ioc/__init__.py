@@ -1,96 +1,64 @@
 # -*- coding: utf-8 -*-
-import logging
 
-logging.basicConfig(level=logging.DEBUG)
+class Component(object):
+    def __init__(self, klass):
+        self.klass = klass
+        self.module_name = klass.__module__
+        self.class_name = klass.__name__
+        self.built = False
+        self.result = None
 
-context = None
-
-class ApplicationContext(object):
-
-    def __init__(self):
-        self.beans = {}
-        self.configs = []
-        self.need_post_construct = []
-
-    def add_config(self, config):
-        logging.debug('add_config: %s' % config)
-        self.configs.append(config)
-
-    def refresh(self):
-        for c in self.configs:
-            # print(c)
-            if c.evaludated:
-                continue
-            logging.debug('eval config: %s' % c)
-            self._eval_config(c)
-        self._eval_post_construct()
-
-    def _eval_post_construct(self):
-        for b in self.need_post_construct:
-            logging.debug('eval post_construct() for bean: %s' % b)
-            b.post_construct()
-
-    def _eval_config(self, config):
-        for i in dir(config):
-            if i.startswith('__'):
-                continue
-            bo = getattr(config, i)
-            if not isinstance(bo, BeanObject):
-                continue
-            logging.debug('eval bean: %s' % bo.name)
-            if bo.name in self.beans:
-                raise RuntimeError(
-                    'already created Bean named "%s"' % bo.name)
-            bo.ctx = config
-            bean = bo()
-            if hasattr(bean, 'post_construct'):
-                self.need_post_construct.append(bean)
-            self.beans[bo.name] = bean
-        config.evaludated = True
-
-    def get_bean(self, name, clazz=None):
-        rv = self.beans.get(name)
-        if rv is None:
-            raise RuntimeError('cannot get bean with name: "%s"' % name)
-        if clazz:
-            if not isinstance(rv, clazz):
-                raise RuntimeError('bean "%s" is not type: "%s"' % name, clazz)
-        return rv
-
-    @staticmethod
-    def create():
-        global context
-        rv = ApplicationContext()
-        context = rv
-        return rv
-
-class Config(object):
-
-    def __init__(self):
-        self.beans = {}
-        self.evaludated = False
-
-
-class BeanObject(object):
-
-    name = None
-    func = None
-    ctx = None
-
-    def __init__(self, name, func):
-        # print('===> BeanObject')
-        # print(name)
-        # print(func)
-        self.name = name
-        self.func = func
-
-    def __call__(self, *args, **kwargs):
-        return self.func(self.ctx, *args, **kwargs)
+    def build(self):
+        if not self.built:
+            self.result =  self.klass()
+            self.built = True
+        return self.result
 
     def __repr__(self):
-        return '<#BeanObject %s>' % self.name
+        return '<#Component %s.%s>' % (
+            self.module_name,
+            self.class_name)
 
 
-def inject(name, clazz):
-    global context
-    return context.get_bean(name, clazz)
+class Context(object):
+
+    def __init__(self):
+        self.beans = {}
+
+
+    def register(self, name, klass, *args, **kwargs):
+        if self.beans.get(name):
+            raise Exception('bean with name "%s" already registered' % name)
+
+        obj = klass(*args, **kwargs)
+        self.beans[name] = obj
+
+
+    def refresh(self):
+        for c in recorded_components:
+            if c.class_name in self.beans:
+                continue
+            bean = c.build()
+            self.beans[c.class_name] = bean
+
+        for name in self.beans:
+            bean = self.beans.get(name)
+            if hasattr(bean, '__post_constructed__') and \
+               bean.__post_constructed__:
+                continue
+            if hasattr(bean, 'post_construct'):
+                bean.post_construct()
+            bean.__post_constructed__ = True
+
+
+    def __getitem__(self, name):
+        if name in self.beans:
+            return self.beans.get(name)
+        raise Exception('not bean with name "%s" registered.' % name)
+
+recorded_components = []
+
+def component(klass):
+    _ = Component(klass)
+    recorded_components.append(_)
+    return _
