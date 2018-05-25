@@ -20,8 +20,8 @@ def connect():
         pass
 
     p = pika.ConnectionParameters(
-        host='127.0.0.1',
-        port=5670,
+        host='172.16.4.220',
+        port=5672,
         virtual_host='/')
 
     while True:
@@ -41,12 +41,14 @@ while True:
     try:
         b = str(datetime.datetime.now())
         chan.basic_publish(
-            exchange='test.exchange',
-            routing_key='test',
+            exchange='gopush.direct',
+            routing_key='hello',
             body=b)
         cnt += 1
         print(cnt)
-        time.sleep(0.5)
+        # time.sleep(1)
+        # if cnt == 1000:
+        #     break
     except pika.exceptions.AMQPError as e:
         logging.exception('')
         time.sleep(0.5)

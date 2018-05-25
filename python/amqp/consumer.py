@@ -2,6 +2,7 @@
 import argparse
 import logging
 import sys
+import time
 
 from qianka.common.job.rabbitmq import QkRabbitMqConsumer
 
@@ -14,6 +15,7 @@ class MyConsumer(QkRabbitMqConsumer):
     def __init__(self):
         self.exchange = None
         self.rouing_key = None
+        self.sleep = 0
         super().__init__()
 
     def configure(self, **options):
@@ -21,6 +23,8 @@ class MyConsumer(QkRabbitMqConsumer):
             self.exchange = options.pop('exchange')
         if 'routing_key' in options:
             self.routing_key = options.pop('routing_key')
+        if 'sleep' in options:
+            self.sleep = options.pop('sleep')
         super().configure(**options)
 
     def setup_topology(self):
@@ -33,6 +37,7 @@ class MyConsumer(QkRabbitMqConsumer):
         logger.warn(frame)
         logger.warn(prop)
         logger.warn(m)
+        time.sleep(self.sleep)
 
 
 def main():
@@ -45,6 +50,7 @@ def main():
     ap.add_argument('--host', required=True)
     ap.add_argument('--port', type=int, default=5672)
     ap.add_argument('--queue', required=True)
+    ap.add_argument('--sleep', default=0, type=float)
 
     options = ap.parse_args()
 

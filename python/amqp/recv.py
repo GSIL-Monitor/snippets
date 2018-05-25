@@ -13,7 +13,7 @@ conn = None
 chan = None
 logging.basicConfig(level=logging.DEBUG)
 
-QUEUE_NAME = 'test.chenlei'
+QUEUE_NAME = 'test'
 
 def connect():
     global conn, chan
@@ -24,8 +24,8 @@ def connect():
         pass
 
     p = pika.connection.URLParameters(
-        # 'amqp://guest:guest@172.24.1.22:5672/?heartbeat_interval=30')
-        'amqp://guest:guest@n1432.ops.gaoshou.me:5672/?heartbeat_interval=30')
+        'amqp://guest:guest@127.0.0.1:5672/?heartbeat_interval=30')
+        # 'amqp://guest:guest@n1432.ops.gaoshou.me:5672/?heartbeat_interval=30')
 
     while True:
         try:
@@ -56,15 +56,18 @@ cnt = 0
 
 while True:
     try:
-        for d, prop, body in chan.consume(QUEUE_NAME, no_ack=False):
+        for d, prop, body in chan.consume(QUEUE_NAME, no_ack=True):
             cnt += 1
-            print(len(body))
-            b = quopri.encodestring(body)
-            print(len(b))
-            b = base64.b64encode(body)
-            print(len(b))
-            z = lzma.decompress(body)
-            print(len(z))
+            print(prop)
+            print(prop.__dict__)
+            print(body)
+            # print(len(body))
+            # b = quopri.encodestring(body)
+            # print(len(b))
+            # b = base64.b64encode(body)
+            # print(len(b))
+            # z = lzma.decompress(body)
+            # print(len(z))
             print('==========')
 
     except pika.exceptions.AMQPError as e:

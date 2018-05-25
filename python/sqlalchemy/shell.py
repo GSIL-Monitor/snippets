@@ -19,7 +19,9 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(255))
+    name = Column(String(255))
+
+Base.metadata.create_all()
 
 
 def commit_or_rollback():
@@ -32,6 +34,6 @@ def commit_or_rollback():
     else:
         s.close()
 
-s.execute("INSERT INTO user (username) VALUES ('hello')");
+s.execute("INSERT INTO user (name) VALUES ('hello')");
 _ = s.execute("SELECT LAST_INSERT_ID()").fetchone();
 print(_)
