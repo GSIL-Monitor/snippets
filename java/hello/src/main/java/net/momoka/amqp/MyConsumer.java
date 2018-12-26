@@ -6,6 +6,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.Recoverable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +16,8 @@ public class MyConsumer extends DefaultConsumer {
   private static final Logger LOGGER =
     LoggerFactory.getLogger(MyConsumer.class);
 
-  protected Channel channel;
-
   public MyConsumer(Channel channel) {
     super(channel);
-
-    this.channel = channel;
   }
 
   @Override
@@ -36,7 +34,7 @@ public class MyConsumer extends DefaultConsumer {
     LOGGER.debug("routing_key: {}", envelope.getRoutingKey());
     LOGGER.debug("deliveryTag: {}", dTag);
 
-    channel.basicAck(dTag, false);
+    // getChannel().basicAck(dTag, false);
   }
 
 }

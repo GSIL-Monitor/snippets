@@ -2,11 +2,11 @@ package net.momoka.lzma;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,8 @@ public class Main {
 
     while (-1 != (n = xis.read(buffer))) {
       bos.write(buffer, 0, n);
-    };
+    }
+    ;
 
 
     xis.close();

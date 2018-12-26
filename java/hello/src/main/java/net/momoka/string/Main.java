@@ -11,7 +11,7 @@ public class Main {
 
   private static final String UUID = "B469E313678947C68AB47317A7BE25CE";
 
-  public static void main (String[] args) {
+  public static void main(String[] args) {
 
 
     StringBuilder sb = new StringBuilder();
@@ -35,6 +35,11 @@ public class Main {
     LOGGER.debug(filePath.substring(n + 1, filePath.length()));
 
     LOGGER.debug("ffwjifw//".replaceAll("\\/+$", ""));
+
+    String routingKey = "keys.update_state.hhh";
+
+    String prefix = routingKey.substring(0, routingKey.indexOf("."));
+    LOGGER.debug("prefix: {}", prefix);
 
   }
 }

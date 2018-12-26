@@ -5,6 +5,12 @@
         </encoder>
     </appender>
 
+    <appender name="UDP" class="net.momoka.logback.UdpAppender">
+        <pattern>%d{YYYY/MM/dd HH:mm:ss.SSS} [%yellow(%thread)] %highlight(%-5level) %green(%logger{100}) - %msg%n</pattern>
+        <host>127.0.0.1</host>
+        <port>5555</port>
+    </appender>
+
     <logger name="org.springframework" level="warn" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
@@ -16,4 +22,8 @@
     <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>
+
+    <logger name="custom" level="debug" additivity="false">
+        <appender-ref ref="UDP" />
+    </logger>
 </configuration>

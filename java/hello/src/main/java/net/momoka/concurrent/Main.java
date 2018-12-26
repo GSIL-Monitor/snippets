@@ -1,31 +1,31 @@
 package net.momoka.concurrent;
 
 import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
+
+import net.momoka.util.DigestUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class DemoRunnable implements Runnable {
 
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(DemoRunnable.class);
+
   private Random rnd = new Random();
 
   @Override
   public void run() {
-    String s = null;
-    for (;;) {
-      if(rnd.nextLong() % 10 == 0)
-        s.equals("");
 
-      try {
-        Thread.sleep(1500);
-      }
-      catch(InterruptedException e) {
-        return;
-      }
+    String payload = "hello";
+
+    for (int i = 0; i < 10000000; i++) {
+      DigestUtil.md5sum(payload);
     }
+
+    LOGGER.debug("run done");
   }
 
 }
@@ -36,30 +36,28 @@ public class Main {
     LoggerFactory.getLogger(Main.class);
 
   protected ExecutorService pool;
-  protected int poolSize = 4;
+  protected int poolSize = 1;
 
   public Main() {
     pool = Executors.newFixedThreadPool(poolSize);
   }
 
   public void run() {
-    int current;
 
-    for (;;) {
-      current = ((ThreadPoolExecutor) pool).getActiveCount();
-      LOGGER.debug("current: {}", current);
-      if (current != poolSize) {
-        pool.execute(new DemoRunnable());
-      }
-      else {
-        try {
-          Thread.sleep(500);
-        }
-        catch (InterruptedException e) {
-          return;
-        }
-      }
+    long s1 = System.currentTimeMillis();
+
+    for (int i = 0; i < 100; i++) {
+      long subs1 = System.currentTimeMillis();
+      pool.execute(new DemoRunnable());
+      long subCost = System.currentTimeMillis() - subs1;
+      LOGGER.debug("subCost {}: {}", i, subCost);
     }
+
+    long totalCost = System.currentTimeMillis() - s1;
+
+    LOGGER.debug("totalCost: {}", totalCost);
+
+    pool.shutdown();
 
   }
 
