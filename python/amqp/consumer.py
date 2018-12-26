@@ -34,11 +34,10 @@ class MyConsumer(QkRabbitMqConsumer):
             self.queue, self.exchange, routing_key=self.routing_key)
 
     def handle_message(self, frame, prop, m):
-        if m['idfa'] == 'A4C0060D-C69F-43DA-856A-ED42A0FE9F0F':
-            logger.warn(frame)
-            logger.warn(prop)
-            logger.warn(m)
-        # time.sleep(self.sleep)
+        logger.warn(frame)
+        logger.warn(prop)
+        logger.warn(m)
+        time.sleep(self.sleep)
 
 
 def main():
@@ -62,6 +61,9 @@ def main():
         queue=options.queue,
         exchange=options.exchange,
         routing_key=options.routing_key,
+        heartbeat_interval=0,
+        no_ack=True,
+        sleep=options.sleep,
     )
     j.main()
 

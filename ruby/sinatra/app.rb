@@ -133,7 +133,7 @@ post '/test' do
 end
 
 get '/sleep' do
-  sleep 1
+  sleep 20
   'sleep'
 end
 

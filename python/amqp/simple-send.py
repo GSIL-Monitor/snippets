@@ -5,17 +5,24 @@ import uuid
 
 import pika
 
-conn = pika.BlockingConnection()
+p = pika.ConnectionParameters(
+    host='fn1037.ops.gaoshou.me',
+    port=5672,
+    virtual_host='/')
+
+conn = pika.BlockingConnection(p)
 chan = conn.channel()
 
 idfa = str(uuid.uuid4()).upper()
-
 
 # help(chan.basic_publish)
 
 properties = {
     'content_type': 'application/json',
     'content_encoding': '',
+    'headers': {
+        'x-delay': 1000,
+    }
 }
 
 prop = pika.BasicProperties(**properties)
@@ -27,14 +34,24 @@ o = {
     'start_at': '2018-11-23 15:20:00',
     'timestamp': int(time.time()),
 }
-routing_key = 'bonus_task.action.start'
+# routing_key = 'bonus_task.action.start'
+# exchange = 'hebe.topic'
+exchange = 'huan.delay.topic'
+routing_key = 'pin:create:order.2222222'
 body = json.dumps(o)
-chan.basic_publish(
-    'hebe.topic',
+_ = chan.basic_publish(
+    exchange,
     routing_key,
     body,
     prop,
 )
+
+print(_)
+
+
+import sys
+sys.exit()
+
 
 o = {
     'task_id': 12897318,

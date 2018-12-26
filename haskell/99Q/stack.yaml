@@ -10,5 +10,5 @@ flags: {}
 extra-package-dbs: []
 packages: [.]
 extra-deps: []
-resolver: lts-6.0
+resolver: lts-9.0
 system-ghc: true

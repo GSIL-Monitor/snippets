@@ -111,8 +111,8 @@ headers = {
     'Content-Type': 'application/json',
 }
 
-#url = 'http://localhost:4399/qk-ci/gitlab-webhook'
-url = 'http://n1386.ops.gaoshou.me:4399/qk-ci/gitlab-webhook'
+url = 'http://localhost:4399/qk-ci/gitlab-webhook'
+# url = 'http://n1386.ops.gaoshou.me:4399/qk-ci/gitlab-webhook'
 _ = requests.post(url, data=body, headers=headers)
 
 print(_.status_code)

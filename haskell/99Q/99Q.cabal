@@ -20,7 +20,7 @@ executable 99Q01
   hs-source-dirs:      Q01
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -30,7 +30,7 @@ executable 99Q02
   hs-source-dirs:      Q02
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -40,7 +40,7 @@ executable 99Q03
   hs-source-dirs:      Q03
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -50,7 +50,7 @@ executable 99Q04
   hs-source-dirs:      Q04
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -60,7 +60,7 @@ executable 99Q05
   hs-source-dirs:      Q05
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -70,7 +70,7 @@ executable 99Q06
   hs-source-dirs:      Q06
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -81,7 +81,7 @@ executable 99Q07
   -- other-modules:
   -- other-extensions:
   -- default-extensions:          ExtendedDefaultRules
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
@@ -92,7 +92,7 @@ executable 99Q08
   -- other-modules:
   -- other-extensions:
   -- default-extensions:          ExtendedDefaultRules
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8
   ghc-options:         -static
   -- hs-source-dirs:
   default-language:    Haskell2010
