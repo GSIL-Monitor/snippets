@@ -34,10 +34,11 @@ class MyConsumer(QkRabbitMqConsumer):
             self.queue, self.exchange, routing_key=self.routing_key)
 
     def handle_message(self, frame, prop, m):
-        logger.warn(frame)
-        logger.warn(prop)
-        logger.warn(m)
-        time.sleep(self.sleep)
+        if m['idfa'] == 'A4C0060D-C69F-43DA-856A-ED42A0FE9F0F':
+            logger.warn(frame)
+            logger.warn(prop)
+            logger.warn(m)
+        # time.sleep(self.sleep)
 
 
 def main():
@@ -45,11 +46,11 @@ def main():
     logging.basicConfig(level=logging.INFO)
 
     ap = argparse.ArgumentParser()
-    ap.add_argument('--exchange', required=True)
+    ap.add_argument('--exchange', default='amq.topic')
     ap.add_argument('--routing-key', required=True)
-    ap.add_argument('--host', required=True)
+    ap.add_argument('--host', default='127.0.0.1')
     ap.add_argument('--port', type=int, default=5672)
-    ap.add_argument('--queue', required=True)
+    ap.add_argument('--queue', default='test')
     ap.add_argument('--sleep', default=0, type=float)
 
     options = ap.parse_args()

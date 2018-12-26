@@ -13,7 +13,8 @@ config = {
     'CACHE_NODES': {
         'default': ('redis', ['redis://127.0.0.1']),
         'mem': ('memcached', ['127.0.0.1:11211']),
-    }
+    },
+    'CACHE_METRIC_SAMPLE_RATE': 100,
 }
 
 

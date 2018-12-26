@@ -3,6 +3,8 @@ import pprint
 import sys
 
 import requests
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 url = sys.argv[1]
@@ -10,11 +12,14 @@ url = sys.argv[1]
 
 def send_request(idfas):
     data = {
-        'idfa': ','.join(idfas),
-        'appid': 388089858,
+        'idfaList': ','.join(idfas),
+        'idfa': 1,
+        # 'appid': 388089858,
+        'out_id': 30,
     }
-    res = requests.post(url, data=data)
+    res = requests.get(url, params=data)
     pprint.pprint(res.json())
+
 
 idfas = set()
 for line in sys.stdin:

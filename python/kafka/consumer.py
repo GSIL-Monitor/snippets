@@ -1,19 +1,33 @@
 # -*- coding: utf-8 -*-
-from kafka import KafkaClient, SimpleConsumer
+import multiprocessing
 
-client = KafkaClient('127.0.0.1:9092')
+from kafka import KafkaConsumer
 
-consumer = SimpleConsumer(client, 'test-group', 'test')
 
-cnt = 0
+class Consumer(multiprocessing.Process):
+    def __init__(self):
+        multiprocessing.Process.__init__(self)
+        self.stop_event = multiprocessing.Event()
 
-while True:
-    try:
-        for message in consumer:
-            cnt += 1
-            print(message.message.value)
-    except:
-        import time
-        import warnings
-        warnings.warn('error')
-        time.sleep(1)
+    def stop(self):
+        self.stop_event.set()
+
+    def run(self):
+        consumer = KafkaConsumer(bootstrap_servers='localhost:9092',
+                                 auto_offset_reset='earliest',
+                                 consumer_timeout_ms=1000)
+        consumer.subscribe(['test'])
+
+        while not self.stop_event.is_set():
+            for message in consumer:
+                print(message)
+                print(type(message))
+                if self.stop_event.is_set():
+                    break
+
+        consumer.close()
+
+
+consumer = Consumer()
+consumer.start()
+consumer.join()

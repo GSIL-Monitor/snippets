@@ -2,7 +2,8 @@
 
 from kombu import Exchange, Queue
 
-BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
+# BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672//'
+BROKER_URL = 'redis://'
 CELERY_IGNORE_RESULT = True
 CELERY_CREATE_MISSING_QUEUES = False
 CELERY_DEFAULT_QUEUE = 'default'
