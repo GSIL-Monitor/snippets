@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/epoll.h>
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -21,6 +22,8 @@
 #define ANSI_COLOR_CYAN "\x1b[1;36m"
 #define ANSI_COLOR_WHITE "\x1b[1;37m"
 #define ANSI_COLOR_RESET "\x1b[0m"
+#define EPOLL_QUEUE_LEN 300
+#define MAXEVENTS 50
 
 
 static char* colors[] = {
@@ -33,6 +36,9 @@ static char* colors[] = {
 
 static int breaking = 1;
 static int progs = PROG_LENGTH;
+
+void select_ioloop(int pids[], int fds[], char * prefix[]);
+void epoll_ioloop(int pids[], int fds[], char * prefix[]);
 
 void get_current_time(char *format, char* output, int length)
 {
@@ -58,7 +64,7 @@ void read_output(int fd, const char* prefix) {
 			return;
 			break;
 		case -1:
-			usleep(100000);
+			// usleep(100000);
 			return;
 		default:
 			;
@@ -183,6 +189,7 @@ int main(int argc, char** argv)
 	programs[1] = cmd2;
 
 	char* prefix[PROG_LENGTH];
+	int l = 0;
 	for (int _ = 0; _ < PROG_LENGTH; _++) {
 		int c = _ % 5;
 		char _prefix[128] = {0};
@@ -193,7 +200,9 @@ int main(int argc, char** argv)
 		strncat(_prefix, num, strlen(trim(num)));
 		strncat(_prefix, " | ", 3);
 		strncat(_prefix, ANSI_COLOR_RESET, strlen(ANSI_COLOR_RESET));
-		prefix[_] = trim(_prefix);
+		l = strlen(trim(_prefix));
+		prefix[_] = calloc(1, l);
+		strncat(prefix[_], trim(_prefix), l);
 		printf("prefix: %s\n", _prefix);
 	}
 
@@ -213,6 +222,17 @@ int main(int argc, char** argv)
 		printf("pid: %d\n", pids[_]);
 	}
 
+	// select_ioloop(pids, fds, prefix);
+	epoll_ioloop(pids, fds, prefix);
+
+}
+
+void select_ioloop(int pids[], int fds[], char * prefix[])
+{
+
+	for (int i = 0;i < PROG_LENGTH; i++) {
+		printf("prefix %d: %s\n", i, prefix[i]);
+	}
 
 	for (;;) {
 
@@ -253,4 +273,74 @@ int main(int argc, char** argv)
 		}
 
 	}
+
+}
+
+void epoll_ioloop(int pids[], int fds[], char * prefix[])
+{
+	int epfd = epoll_create(EPOLL_QUEUE_LEN);
+	int res = 0;
+
+	printf("fd0: %d\n", fds[0]);
+	printf("fd1: %d\n", fds[1]);
+
+	struct epoll_event ev1;
+	ev1.events = EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP;
+	ev1.data.fd = fds[0];
+	res = epoll_ctl(epfd, EPOLL_CTL_ADD, fds[0], &ev1);
+
+	struct epoll_event ev2;
+	ev2.events = EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP;
+	ev2.data.fd = fds[1];
+	res = epoll_ctl(epfd, EPOLL_CTL_ADD, fds[1], &ev2);
+
+	struct epoll_event * events = calloc(
+		MAXEVENTS, sizeof(struct epoll_event));
+
+	for (;;) {
+
+		sleep(5);
+		int n = epoll_wait(epfd, events, 10, 10000);
+		printf(">>>>> n: %d\n", n);
+		for (int i = 0; i < n; i++) {
+
+			printf("fd: %d\n", events[i].data.fd);
+			printf("ERR: %d\n", events[i].events & EPOLLERR);
+			printf("HUP: %d\n", events[i].events & EPOLLHUP);
+			printf("IN: %d\n", events[i].events & EPOLLIN);
+			printf("PRI: %d\n", events[i].events & EPOLLPRI);
+
+			if (events[i].events & EPOLLERR) {
+				fprintf(stderr, "epoll error\n");
+				close(events[i].data.fd);
+			}
+			else if (events[i].events & EPOLLHUP) {
+				reap_children(progs, pids, fds);
+				epoll_ctl(
+					epfd, EPOLL_CTL_DEL,
+					events[i].data.fd, NULL);
+				// sleep(1);
+				continue;
+			}
+			else if (events[i].data.fd == fds[0] ||
+					 events[i].data.fd == fds[1]) {
+
+				for(int _ = 0; _ < PROG_LENGTH; _++) {
+					if (events[i].data.fd == fds[_]) {
+						printf("[parent] ready index: %d, fd: %d\n",
+							   _,
+							   fds[_]);
+						read_output(fds[_], prefix[_]);
+						printf("[parent] read complete\n");
+					}
+				}
+
+			}
+			else {
+				fprintf(stderr, "impossible?\n");
+			}
+		}
+	}
+
+	free(events);
 }

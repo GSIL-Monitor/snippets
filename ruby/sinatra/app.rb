@@ -4,6 +4,10 @@ require 'json'
 require 'sinatra'
 require 'xz'
 
+require 'logger'
+
+
+$logger = Logger.new(STDOUT)
 
 
 IDFA_VERIFY_CONFIG = {
@@ -13,7 +17,6 @@ IDFA_VERIFY_CONFIG = {
     :is_enabled => true,
     :template_code => '',
     :req_http_method => 'GET',
-    :req_idfa_lowercase => true,
     :req_idfa_nohyphen => true,
     :req_idfa_lowercase => true,
     :res_idfa_nohyphen => true,
@@ -139,30 +142,35 @@ put '/put' do
 end
 
 def idfa_verify
-  p params.to_s
+  $logger.error("params: #{params}")
 
-  if params.include? 'timestamp' then
-    m = Digest::MD5.new
-    m << params[:appid].to_s
-    m << params[:idfa]
-    m << params[:timestamp]
-    m << SHARED_KEY
-    p "#{params[:sign]} <= x => #{m.hexdigest()}"
-    if params[:sign] != m.hexdigest() then
-      status 400
-      {error: true, error_msg: 'sign error'}.to_json
-    end
-  end
+  # if params.include? 'timestamp' then
+  #   m = Digest::MD5.new
+  #   m << params[:appid].to_s
+  #   m << params[:idfa]
+  #   m << params[:timestamp]
+  #   m << SHARED_KEY
+  #   p "#{params[:sign]} <= x => #{m.hexdigest()}"
+  #   if params[:sign] != m.hexdigest() then
+  #     status 400
+  #     {error: true, error_msg: 'sign error'}.to_json
+  #   end
+  # end
 
   rv = {}
 
   params[:idfa].split(',').each do |e|
-    rv[e] = 0
+    $logger.error("e: #{e}")
+    rv[e] = 1
   end
 
-  p rv
+  $logger.error("rv: #{rv}")
 
-  rv.to_json
+  _ = rv.to_json
+
+  $logger.error("_: #{_}")
+
+  return _
 end
 
 post '/idfa-verify' do
@@ -245,5 +253,18 @@ get '/ops_api/click/notify' do
   end
 
   rv = {:status => 'ok', :data => [CLICK_NOTIFY_CONFIG[ad_id]]}
+  JSON.dump(rv)
+end
+
+get '/s5/hello' do
+  response.headers['Content-Type'] = 'application/json'
+  rv = {
+    "message" => ["hello"],
+    "status" => "ok",
+    "payload" => {
+      "some" => "key",
+    }
+  }
+  # status 400
   JSON.dump(rv)
 end

@@ -3,7 +3,7 @@ include config.mk
 SRC = $(wildcard snippets.c util/*.c)
 OBJ = $(SRC:.c=.o)
 
-all: options snippets
+all: options snippets fork
 
 options:
 	@echo snippets build options
@@ -21,6 +21,9 @@ ${OBJ}: config.h config.mk
 
 snippets: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
+
+fork: fork.o
+	${CC} -o $@ fork.o ${LDFLAGS}
 
 clean:
 	rm -f snippets ${OBJ}

@@ -1,43 +1,45 @@
-#include <stdint.h>
-typedef uint8_t u_char;
+#include "string.h"
+#include "stdio.h"
+#include "uthash.h"
 
-#include <bsd/stdlib.h>
-#include <openssl/evp.h>
-#include <stdint.h>
-#include <string.h>
-#include <inttypes.h>
+struct config_t {
+	char name[255];
+	UT_hash_handle hh;
+};
 
-#define MAX_PADDING 8192;
-
-void sha1()
-{
-	EVP_MD_CTX ctx;
-
-	char buffer[] = "123456";
-	uint8_t md_output[EVP_MAX_MD_SIZE];
-	unsigned int md_len;
-
-	EVP_DigestInit(&ctx, EVP_sha1());
-	EVP_DigestUpdate(&ctx, buffer, sizeof(buffer));
-	EVP_DigestFinal(&ctx,  md_output, &md_len);
-
-	for (int i = 0; i < 6000; i++) {
-		EVP_DigestInit(&ctx, EVP_sha1());
-		EVP_DigestUpdate(&ctx, md_output, md_len);
-		EVP_DigestFinal(&ctx,  md_output, &md_len);
-	}
-
-	printf("%s\n", md_output);
-}
 
 
 int main(int argc, char** argv)
 {
-	u_int32_t rnd = arc4random();
 
-	unsigned int padding_length = rnd % MAX_PADDING;
+	struct config_t * configs = NULL;
+	struct config_t * myconfig = calloc(sizeof(struct config_t), 1);
+	sprintf(myconfig->name, "%s", "hello");
 
-	printf("%u\n", padding_length);
+	HASH_ADD_STR(configs, name, myconfig);
 
-	return 0;
+	char * key = "hello";
+
+	struct config_t * result = NULL;
+
+	HASH_FIND_STR(configs, key, result);
+
+	if (result == NULL) {
+		printf("not found\n");
+	}
+	else {
+		printf("found\n");
+	}
+
+	HASH_DEL(configs, result);
+
+	HASH_FIND_STR(configs, key, result);
+
+	if (result == NULL) {
+		printf("not found\n");
+	}
+	else {
+		printf("found\n");
+	}
+
 }
