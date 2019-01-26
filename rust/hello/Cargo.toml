@@ -1,7 +1,6 @@
 [package]
 name = "hello"
 version = "0.1.0"
-authors = ["80x24 <80x24@momoka.net>"]
+authors = ["aleiphoenix <80x24@momoka.net>"]
 
 [dependencies]
-redis = "0.5.2"
