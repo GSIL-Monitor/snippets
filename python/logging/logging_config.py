@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 from logging.handlers import DatagramHandler
 import socket
 import sys
 
-from kafka_logging import KafkaLoggingHandler
+# from kafka_logging import KafkaLoggingHandler
+
 
 class HostnameFilter(logging.Filter):
     hostname = ''
@@ -12,10 +14,10 @@ class HostnameFilter(logging.Filter):
     def __init__(self):
         self.hostname = socket.gethostname()
 
-
     def filter(self, record):
         record.hostname = self.hostname
         return True
+
 
 class QiankaUDPHandler(DatagramHandler):
 
@@ -25,10 +27,18 @@ class QiankaUDPHandler(DatagramHandler):
         self.topic = topic
         DatagramHandler.__init__(self, host, port)
 
-
     def emit(self, record):
         s = "%s\t%s" % (self.topic, self.format(record))
         self.send(s.encode('utf-8'))
+
+
+class CustomHandler(logging.StreamHandler):
+
+    def format(self, record):
+        print(record)
+        print(record.__dict__)
+        # return json.dumps(record.__dict__)
+        return ''
 
 
 hostname = HostnameFilter()
@@ -39,12 +49,14 @@ f = logging.Formatter('[%(asctime)s %(levelname)-7s (%(name)s) '
                       '<%(process)d> %(filename)s:%(lineno)d] %(message)s')
 
 console = logging.StreamHandler(sys.stderr)
+# console = CustomHandler(sys.stderr)
 console.setLevel(logging.INFO)
 console.setFormatter(f)
 
-qianka = QiankaUDPHandler('hera', 'n1397.ops.gaoshou.me', 5252)
+# qianka = QiankaUDPHandler('hera', 'n1397.ops.gaoshou.me', 5252)
+qianka = QiankaUDPHandler('hebe', '127.0.0.1', 5252)
 qianka.setLevel(logging.INFO)
-qianka.setFormatter(f);
+qianka.setFormatter(f)
 qianka.addFilter(hostname)
 
 logger = logging.getLogger()

@@ -35,8 +35,8 @@ class MyConsumer(QkRabbitMqConsumer):
 
     def handle_message(self, frame, prop, m):
         logger.warn(frame)
-        logger.warn(prop)
-        logger.warn(m)
+        # logger.warn(prop)
+        # logger.warn(m)
         time.sleep(self.sleep)
 
 

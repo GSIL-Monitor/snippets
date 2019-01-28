@@ -17,3 +17,8 @@ while True:
     logger.debug('调试！！！')
     logger.warning('警告！！！')
     status.warning('警告！！！')
+
+    try:
+        raise RuntimeError
+    except Exception:
+        logger.exception('hello')

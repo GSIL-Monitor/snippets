@@ -105,7 +105,7 @@ def route_task(name, args, kwargs, options, task=None, **kw):
         return {
             'exchange': 'default',  # TODO:
             'exchange_type': 'topic',
-            'routing_key': 'slow',
+            'routing_key': 'slow.' + name,
         }
 
 
